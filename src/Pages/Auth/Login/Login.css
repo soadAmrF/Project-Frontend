@@ -5,7 +5,7 @@
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.container {
+.login-container {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -24,7 +24,8 @@
   z-index: 1;
   transform: scale(1.1);
 }
-.card {
+
+.login-card {
   width: 530px;
   padding: 60px 30px;
   border-radius: 20px;
@@ -52,12 +53,14 @@
   font-size: 40px;
   color: #3b6b9a;
 }
+
 .p {
   margin-top: 0;
   margin-bottom: 22px;
   text-align: center;
   color: gray;
 }
+
 .input-login {
   margin-bottom: 20px;
 }
@@ -104,4 +107,26 @@
   font-size: 14px;
   margin-bottom: 15px;
   text-align: center;
+}
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+.background-overlay {
+  position: absolute;
+  top: -5%;
+  left: -5%;
+  width: 110%;
+  height: 110%;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  filter: blur(8px) brightness(0.8);
+  z-index: 1;
 }
