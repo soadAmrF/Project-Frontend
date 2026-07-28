@@ -8,8 +8,9 @@ import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import router from "@/routes/AppRoutes";
 import './index.css'
 
-createRoot(document.getElementById('root')).render(
+
+createRoot(document.getElementById("root")).render(
   <StrictMode>
     <RouterProvider router={router} />
   </StrictMode>,
-)
+);
