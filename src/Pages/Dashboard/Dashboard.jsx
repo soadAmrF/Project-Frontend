@@ -4,10 +4,12 @@ import ChartSection from "./components/ChartSection";
 import RecentPatients from "./components/RecentPatients";
 import CalendarCard from "./components/CalendarCard";
 import "./Dashboard.css";
+import Navbar from "./components/Nav";
 
 export default function Dashboard() {
   return (
     <div className="dashboard-container">
+      <Navbar />
       <DashboardHeader />
 
       <div className="dashboard-grid">
