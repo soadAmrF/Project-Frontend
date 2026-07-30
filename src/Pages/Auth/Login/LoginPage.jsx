@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { api } from "@/services/api";
+import axios from "@/services/axios";
 import "@/Pages/Auth/Login//login.css";
 import byImage from "@/assets/image/clinic.jpg";
 import logoImg from "@/assets/image/teeth.png";
@@ -9,11 +9,11 @@ const LoginPage = () => {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
-    email: "",
+    name: "",
     password: "",
   });
 
-  const [error, setError] = useState(false);
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     setForm({
@@ -26,22 +26,25 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!form.email || !form.password) {
-      setError(true);
-      return;
-    }
-
-    setError(false);
+    setError("");
 
     try {
-      const response = await api.post("/login", form);
+      const response = await axios.post("/auth", form);
+
       const token = response.data.data.token;
+
       localStorage.setItem("token", token);
+
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          role: response.data.data.role,
+        }),
+      );
 
       navigate("/dashboard");
     } catch (err) {
-      console.error("Login failed:", err);
-      setError(true);
+      setError(err.response?.data?.message || "Login failed");
     }
   };
 
@@ -65,10 +68,10 @@ const LoginPage = () => {
         <form onSubmit={handleSubmit}>
           <div className="input-login">
             <input
-              type="email"
-              name="email"
-              placeholder="email"
-              value={form.email}
+              type="text"
+              name="name"
+              placeholder="Username"
+              value={form.name}
               onChange={handleChange}
             />
           </div>
@@ -83,11 +86,7 @@ const LoginPage = () => {
             />
           </div>
 
-          {error && (
-            <p className="error-message">
-              Please enter both email and password.
-            </p>
-          )}
+          {error && <p className="error-message">{error}</p>}
 
           <button type="submit" className="btn-login">
             Login
