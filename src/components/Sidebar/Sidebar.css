@@ -1,0 +1,187 @@
+.sidebar {
+  position: fixed;
+
+  left: 0;
+
+  top: 0;
+
+  width: 260px;
+
+  height: 100vh;
+
+  background: #fff;
+
+  border-right: 1px solid #e9ecef;
+
+  display: flex;
+
+  flex-direction: column;
+
+  z-index: 1200;
+
+  transition: 0.3s;
+}
+
+.sidebar-logo {
+  height: 72px;
+
+  padding: 18px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  border-bottom: 1px solid #f1f3f5;
+}
+
+.logo {
+  display: flex;
+
+  gap: 12px;
+
+  align-items: center;
+}
+
+.logo i {
+  font-size: 28px;
+
+  color: #2563eb;
+}
+
+.logo h5 {
+  margin: 0;
+
+  font-weight: 700;
+}
+
+.logo small {
+  color: #6c757d;
+}
+
+.close-sidebar {
+  border: none;
+
+  background: none;
+
+  font-size: 22px;
+}
+
+.sidebar-menu {
+  flex: 1;
+
+  overflow: auto;
+
+  padding: 15px;
+}
+
+.menu-item {
+  display: flex;
+
+  align-items: center;
+
+  gap: 14px;
+
+  padding: 13px 15px;
+
+  border-radius: 12px;
+
+  margin-bottom: 8px;
+
+  text-decoration: none;
+
+  color: #495057;
+
+  transition: 0.2s;
+
+  font-weight: 500;
+}
+
+.menu-item:hover {
+  background: #f5f7fb;
+
+  color: #2563eb;
+}
+
+.menu-item.active {
+  background: #edf4ff;
+
+  color: #2563eb;
+}
+
+.menu-item i {
+  font-size: 18px;
+}
+
+.sidebar-user {
+  border-top: 1px solid #eee;
+
+  padding: 18px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+}
+
+.avatar {
+  width: 45px;
+
+  height: 45px;
+
+  border-radius: 50%;
+
+  background: #2563eb;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-weight: bold;
+
+  color: #fff;
+}
+
+.sidebar-user h6 {
+  margin: 0;
+
+  font-weight: 600;
+}
+
+.sidebar-user small {
+  color: #6c757d;
+}
+
+.sidebar-overlay {
+  position: fixed;
+
+  inset: 0;
+
+  background: rgba(0, 0, 0, 0.3);
+
+  z-index: 1100;
+}
+
+@media (max-width: 992px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+
+  .sidebar.show {
+    transform: translateX(0);
+  }
+}
+
+@media (min-width: 993px) {
+  .sidebar-overlay {
+    display: none;
+  }
+
+  .close-sidebar {
+    display: none;
+  }
+}

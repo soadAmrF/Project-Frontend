@@ -1,15 +1,13 @@
-import DashboardHeader from "./components/DashboardHeader";
-import StatisticsCards from "./components/StatisticsCards";
-import ChartSection from "./components/ChartSection";
-import RecentPatients from "./components/RecentPatients";
-import CalendarCard from "./components/CalendarCard";
-import "./Dashboard.css";
-import Navbar from "./components/Nav";
+import DashboardHeader from "@/Pages/Dashboard/components/DashboardHeader";
+import StatisticsCards from "@/Pages/Dashboard/components/StatisticsCards";
+import ChartSection from "@/Pages/Dashboard/components/ChartSection";
+import RecentPatients from "@/Pages/Dashboard/components/RecentPatients";
+import CalendarCard from "@/Pages/Dashboard/components/CalendarCard";
+import "@/Pages/Dashboard/Dashboard.css";
 
 export default function Dashboard() {
   return (
     <div className="dashboard-container">
-      <Navbar />
       <DashboardHeader />
 
       <div className="dashboard-grid">
