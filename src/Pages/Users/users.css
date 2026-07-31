@@ -1,0 +1,122 @@
+.users-page{
+    padding:25px;
+}
+
+
+.stats-card{
+    transition:.3s;
+    border-radius:12px;
+}
+
+.stats-card:hover{
+    transform:translateY(-4px);
+}
+
+.stats-icon{
+    width:55px;
+    height:55px;
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#fff;
+    font-size:22px;
+}
+
+
+.table-responsive{
+    border-radius:12px;
+}
+
+.table{
+    margin-bottom:0;
+}
+
+.table td,
+.table th{
+    vertical-align:middle;
+    white-space:nowrap;
+}
+
+
+.btn{
+    border-radius:8px;
+}
+
+.btn-sm{
+    width:36px;
+    height:36px;
+    display:inline-flex;
+    justify-content:center;
+    align-items:center;
+}
+
+
+.input-group-text{
+    background:#fff;
+}
+
+.form-control{
+    box-shadow:none !important;
+}
+
+
+@media (max-width:992px){
+
+.users-page{
+    padding:20px;
+}
+
+}
+
+@media (max-width:768px){
+
+.users-page{
+    padding:15px;
+}
+
+.table{
+    font-size:14px;
+}
+
+.btn{
+    font-size:14px;
+}
+
+h2{
+    font-size:24px;
+}
+
+}
+
+@media (max-width:576px){
+
+.users-page{
+    padding:10px;
+}
+
+.table{
+    font-size:13px;
+}
+
+.table td,
+.table th{
+    padding:.7rem .5rem;
+}
+
+.btn-sm{
+    width:32px;
+    height:32px;
+}
+
+.stats-icon{
+    width:45px;
+    height:45px;
+    font-size:18px;
+}
+
+h4{
+    font-size:20px;
+}
+
+}
