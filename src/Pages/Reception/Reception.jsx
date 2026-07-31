@@ -195,74 +195,75 @@ export default function Reception() {
             + New Check-In
           </button>
         </div>
-
-        <table className="patients-table">
-          <thead>
-            <tr>
-              <th>Patient Details</th>
-              <th>Assigned Doctor</th>
-              <th>Appointment Time</th>
-              <th>Check-In Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {displayedPatients.map((p) => (
-              <tr key={p.id}>
-                <td>
-                  <div className="patient-cell">
-                    <div className="avatar-icon">
-                      <i className="bi bi-person-fill"></i>
-                    </div>
-                    <div>
-                      <strong>{p.name}</strong>
-                      <div className="patient-id">{p.id}</div>
-                    </div>
-                  </div>
-                </td>
-                <td>{p.doctor}</td>
-                <td>{p.time}</td>
-                <td>
-                  <span
-                    className={`status-tag ${p.status.toLowerCase().replace(" ", "-")}`}
-                  >
-                    {p.status}
-                  </span>
-                </td>
-                <td className="actions-cell">
-                  <button
-                    className="btn-icon"
-                    onClick={() => deletePatient(p.id)}
-                    title="Delete"
-                  >
-                    <i className="bi bi-trash"></i>
-                  </button>
-                  <button
-                    className="btn-icon"
-                    onClick={() =>
-                      setActiveMenu(activeMenu === p.id ? null : p.id)
-                    }
-                  >
-                    <i className="bi bi-three-dots"></i>
-                  </button>
-                  {activeMenu === p.id && (
-                    <div className="menu-dropdown">
-                      <div onClick={() => updateStatus(p.id, "Waiting")}>
-                        Waiting
-                      </div>
-                      <div onClick={() => updateStatus(p.id, "In Progress")}>
-                        In Progress
-                      </div>
-                      <div onClick={() => updateStatus(p.id, "Completed")}>
-                        Completed
-                      </div>
-                    </div>
-                  )}
-                </td>
+        <div className="table-responsive">
+          <table className="patients-table">
+            <thead>
+              <tr>
+                <th>Patient Details</th>
+                <th>Assigned Doctor</th>
+                <th>Appointment Time</th>
+                <th>Check-In Status</th>
+                <th>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {displayedPatients.map((p) => (
+                <tr key={p.id}>
+                  <td>
+                    <div className="patient-cell">
+                      <div className="avatar-icon">
+                        <i className="bi bi-person-fill"></i>
+                      </div>
+                      <div>
+                        <strong>{p.name}</strong>
+                        <div className="patient-id">{p.id}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>{p.doctor}</td>
+                  <td>{p.time}</td>
+                  <td>
+                    <span
+                      className={`status-tag ${p.status.toLowerCase().replace(" ", "-")}`}
+                    >
+                      {p.status}
+                    </span>
+                  </td>
+                  <td className="actions-cell">
+                    <button
+                      className="btn-icon"
+                      onClick={() => deletePatient(p.id)}
+                      title="Delete"
+                    >
+                      <i className="bi bi-trash"></i>
+                    </button>
+                    <button
+                      className="btn-icon"
+                      onClick={() =>
+                        setActiveMenu(activeMenu === p.id ? null : p.id)
+                      }
+                    >
+                      <i className="bi bi-three-dots"></i>
+                    </button>
+                    {activeMenu === p.id && (
+                      <div className="menu-dropdown">
+                        <div onClick={() => updateStatus(p.id, "Waiting")}>
+                          Waiting
+                        </div>
+                        <div onClick={() => updateStatus(p.id, "In Progress")}>
+                          In Progress
+                        </div>
+                        <div onClick={() => updateStatus(p.id, "Completed")}>
+                          Completed
+                        </div>
+                      </div>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
         <div className="pagination-bar">
           <span className="pagination-info">
