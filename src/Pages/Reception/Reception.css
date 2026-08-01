@@ -1,17 +1,19 @@
-* {
-  box-sizing: border-box;
-}
 .reception-page {
-  padding: 24px;
+  padding: 20px;
   background-color: #f8fafc;
   min-height: 100vh;
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
+  color: #334155;
 }
 
 .stats-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 16px;
-  margin-bottom: 12px;
+  margin: 20px 0;
 }
 
 .stat-card {
@@ -20,26 +22,28 @@
   border-radius: 12px;
   display: flex;
   align-items: center;
-  gap: 14px;
-  border: 1px solid #e2e8f0;
+  gap: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  border: 1px solid #f1f5f9;
 }
 
 .icon-box {
-  width: 48px;
-  height: 48px;
+  width: 46px;
+  height: 46px;
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 20px;
+  flex-shrink: 0;
 }
 
 .blue-card {
-  background-color: #e0edff;
-  color: #0d6efd;
+  background-color: #eff6ff;
+  color: #2563eb;
 }
 .yellow-card {
-  background-color: #fef3c7;
+  background-color: #fffbe3;
   color: #d97706;
 }
 .green-card {
@@ -52,49 +56,49 @@
 }
 
 .stat-title {
+  display: block;
   font-size: 13px;
   color: #64748b;
-  display: block;
+  font-weight: 500;
 }
 
 .stat-card h3 {
-  margin: 2px 0;
   font-size: 22px;
+  font-weight: 700;
   color: #0f172a;
+  margin: 2px 0;
 }
 
 .stat-sub {
-  font-size: 12px;
+  font-size: 11px;
   color: #94a3b8;
 }
 
 .stat-sub.link a {
-  color: #0d6efd;
-  font-weight: 600;
+  color: #2563eb;
   text-decoration: none;
+  font-weight: 500;
 }
 
 .table-section {
   background: #ffffff;
   border-radius: 12px;
-  border: 1px solid #e2e8f0;
-  padding: 20px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
 }
 
-.table-responsive {
-  overflow-x: auto;
+.table-header-tools {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
 }
 
-.table-header-tools,
 .left-tools {
   display: flex;
   align-items: center;
   gap: 12px;
-  flex-wrap: wrap;
-}
-
-.table-header-tools {
-  margin-bottom: 16px;
 }
 
 .search-wrapper {
@@ -105,57 +109,68 @@
 
 .search-icon {
   position: absolute;
-  left: 12px;
+  left: 10px;
   color: #94a3b8;
+  font-size: 14px;
 }
 
 .search-input {
-  padding: 8px 12px 8px 34px;
+  padding: 8px 12px 8px 32px;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
-  width: min(320px, 100%);
   font-size: 13px;
   outline: none;
+  width: 240px;
 }
 
 .filter-select {
-  min-width: 170px;
   padding: 8px 12px;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
   font-size: 13px;
-  color: #475569;
   outline: none;
+  background-color: #fff;
 }
 
 .btn-add {
-  background-color: #0d6efd;
-  color: #ffffff;
+  margin-left: auto;
+  background: #2563eb;
+  color: #fff;
   border: none;
-  padding: 8px 16px;
+  padding: 8px 18px;
   border-radius: 8px;
-  font-weight: 600;
   font-size: 13px;
-  white-space: nowrap;
+  font-weight: 600;
   cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn-add:hover {
+  background: #1d4ed8;
+}
+
+.table-responsive {
+  overflow-x: auto;
 }
 
 .patients-table {
   width: 100%;
   border-collapse: collapse;
-}
-
-.patients-table th,
-.patients-table td {
-  padding: 12px 16px;
   text-align: left;
-  border-bottom: 1px solid #f1f5f9;
-  font-size: 13px;
 }
 
 .patients-table th {
-  background-color: #f8fafc;
+  padding: 12px;
+  border-bottom: 2px solid #f1f5f9;
   color: #64748b;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.patients-table td {
+  padding: 12px;
+  border-bottom: 1px solid #f8fafc;
+  font-size: 13px;
 }
 
 .patient-cell {
@@ -165,39 +180,41 @@
 }
 
 .avatar-icon {
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
+  background: #f1f5f9;
   border-radius: 50%;
-  background-color: #e2e8f0;
-  color: #64748b;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 18px;
+  color: #64748b;
 }
 
 .patient-id {
-  font-size: 11px;
   color: #94a3b8;
+  font-size: 11px;
 }
 
 .status-tag {
   padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 12px;
+  border-radius: 20px;
+  font-size: 11px;
   font-weight: 600;
+  display: inline-block;
 }
 
 .status-tag.waiting {
-  background-color: #fef3c7;
-  color: #d97706;
+  background: #fef3c7;
+  color: #b45309;
 }
 .status-tag.in-progress {
-  background-color: #e0edff;
-  color: #0d6efd;
+  background: #eff6ff;
+  color: #2563eb;
 }
 .status-tag.completed {
-  background-color: #dcfce7;
-  color: #16a34a;
+  background: #dcfce7;
+  color: #15803d;
 }
 
 .actions-cell {
@@ -205,35 +222,35 @@
 }
 
 .btn-icon {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 6px;
-  padding: 4px 8px;
-  margin-right: 4px;
-  cursor: pointer;
+  background: transparent;
+  border: none;
   color: #64748b;
+  cursor: pointer;
+  padding: 4px 8px;
+  font-size: 15px;
 }
 
 .menu-dropdown {
   position: absolute;
   right: 0;
-  top: 35px;
-  background: #ffffff;
+  top: 100%;
+  background: #fff;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   z-index: 10;
-  width: 110px;
+  width: 120px;
+  overflow: hidden;
 }
 
 .menu-dropdown div {
-  padding: 8px;
+  padding: 8px 12px;
   font-size: 12px;
   cursor: pointer;
 }
 
 .menu-dropdown div:hover {
-  background-color: #f8fafc;
+  background: #f1f5f9;
 }
 
 .pagination-bar {
@@ -241,33 +258,28 @@
   justify-content: space-between;
   align-items: center;
   margin-top: 16px;
-  padding-top: 12px;
-  border-top: 1px solid #f1f5f9;
-}
-
-.pagination-info {
   font-size: 12px;
   color: #64748b;
 }
 
 .pagination-btns {
   display: flex;
-  gap: 6px;
+  gap: 4px;
 }
 
 .pagination-btns button {
-  background: #ffffff;
   border: 1px solid #e2e8f0;
-  padding: 5px 12px;
+  background: #fff;
+  padding: 4px 10px;
   border-radius: 6px;
-  font-size: 12px;
   cursor: pointer;
+  font-size: 12px;
 }
 
 .pagination-btns button.active {
-  background-color: #0d6efd;
-  color: #ffffff;
-  border-color: #0d6efd;
+  background: #2563eb;
+  color: #fff;
+  border-color: #2563eb;
 }
 
 .pagination-btns button:disabled {
@@ -275,45 +287,42 @@
   cursor: not-allowed;
 }
 
+/* Modal */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 100;
+  z-index: 1000;
 }
 
 .modal-card {
-  background: #ffffff;
-  padding: 24px;
+  background: #fff;
+  padding: 22px;
   border-radius: 12px;
-  width: min(360px, 95%);
+  width: 100%;
+  max-width: 380px;
 }
 
 .modal-title {
-  margin-top: 0;
-  margin-bottom: 16px;
-  font-size: 18px;
+  margin: 0 0 16px 0;
+  font-size: 16px;
 }
 
 .field {
-  margin-bottom: 14px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-}
-
-.field label {
-  font-size: 13px;
-  color: #475569;
+  gap: 4px;
+  margin-bottom: 12px;
+  font-size: 12px;
 }
 
 .field input,
 .field select {
   padding: 8px 12px;
-  border: 1px solid #cbd5e1;
+  border: 1px solid #e2e8f0;
   border-radius: 8px;
   font-size: 13px;
   outline: none;
@@ -323,22 +332,22 @@
   display: flex;
   justify-content: flex-end;
   gap: 8px;
-  margin-top: 20px;
+  margin-top: 16px;
 }
 
 .btn-cancel {
-  background-color: #f1f5f9;
-  color: #475569;
+  background: #f1f5f9;
   border: none;
   padding: 8px 16px;
   border-radius: 8px;
   font-size: 13px;
   cursor: pointer;
+  color: #475569;
 }
 
 .btn-save {
-  background-color: #0d6efd;
-  color: #ffffff;
+  background: #2563eb;
+  color: #fff;
   border: none;
   padding: 8px 16px;
   border-radius: 8px;
@@ -346,24 +355,16 @@
   cursor: pointer;
 }
 
-
 @media (max-width: 768px) {
-
-  .table-header-tools,
-  .left-tools {
+  .table-header-tools {
     flex-direction: column;
     align-items: stretch;
   }
-
-  .search-input,
-  .filter-select,
-  .btn-add {
+  .search-input {
     width: 100%;
   }
-
-  .pagination-bar {
-    flex-direction: column;
-    gap: 10px;
+  .btn-add {
+    margin-left: 0;
+    width: 100%;
   }
-
 }
