@@ -77,7 +77,7 @@
   justify-content: space-between;
   align-items: center;
   gap: 12px;
-  flex-wrap: wrap; /* ينزل العناصر تحت بعضها إذا ضاقت الشاشة */
+  flex-wrap: wrap;
   margin-bottom: 24px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
@@ -100,7 +100,7 @@
 
 .search-input {
   flex: 1;
-  min-width: 180px; /* يتأقلم مع الحجم دون الخروج خارج المربع */
+  min-width: 180px;
 }
 
 .select-input {
@@ -137,7 +137,7 @@
 }
 
 .table-responsive {
-  overflow-x: auto; /* يتيح التمرير الأفقي للجدول فقط عند الشاشات الصغيرة جداً */
+  overflow-x: auto;
 }
 
 .custom-table {

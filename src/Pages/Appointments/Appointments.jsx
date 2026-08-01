@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import PageHeader from "@/components/PageHeader";
 import "./Appointments.css";
 
-const defaultData = [
+const initialData = [
   {
     id: 1,
     patientName: "Assem Monir",
@@ -21,7 +21,7 @@ const defaultData = [
     doctorName: "Dr. Sarah Ahmed",
     doctorSpecialty: "General Dentist",
     date: "2025-05-26",
-    day: "Monday",
+    day: "Friday",
     time: "10:00 AM",
     status: "Pending",
   },
@@ -32,7 +32,7 @@ const defaultData = [
     doctorName: "Dr. Ahmed Hassan",
     doctorSpecialty: "Orthodontist",
     date: "2025-05-26",
-    day: "Monday",
+    day: "Tuesday",
     time: "11:30 AM",
     status: "Confirmed",
   },
@@ -43,62 +43,64 @@ const defaultData = [
     doctorName: "Dr. Sarah Ahmed",
     doctorSpecialty: "General Dentist",
     date: "2025-05-26",
-    day: "Monday",
+    day: "Sunday",
     time: "01:00 PM",
     status: "Pending",
   },
 ];
 
-const doctors = [
-  "Dr. Sarah Ahmed",
-  "Dr. Ahmed Hassan",
-  "Dr. Mostafa Elsayad",
-  "Dr. Sheimaa Ismail",
-];
-
 export default function Appointments() {
   const [appointments, setAppointments] = useState(() => {
-    const saved = localStorage.getItem("appointments_data");
-    return saved ? JSON.parse(saved) : defaultData;
+    const saved = localStorage.getItem("my_appointments");
+    return saved ? JSON.parse(saved) : initialData;
   });
 
   const [search, setSearch] = useState("");
-  const [status, setStatus] = useState("");
-  const [page, setPage] = useState(1);
-  const [modalData, setModalData] = useState(null);
+  const [statusFilter, setStatusFilter] = useState("");
+  const [showModal, setShowModal] = useState(false);
 
-  useEffect(() => {
-    localStorage.setItem("appointments_data", JSON.stringify(appointments));
-  }, [appointments]);
+  const [patientName, setPatientName] = useState("");
+  const [patientPhone, setPatientPhone] = useState("");
+  const [doctorName, setDoctorName] = useState("Dr. Sarah Ahmed");
+  const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
 
-  const filtered = appointments.filter((item) => {
+  const filteredAppointments = appointments.filter((item) => {
     const matchesSearch =
       item.patientName.toLowerCase().includes(search.toLowerCase()) ||
       item.patientPhone.includes(search);
-    const matchesStatus = status === "" || item.status === status;
+    const matchesStatus = statusFilter === "" || item.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
 
-  const itemsPerPage = 4;
-  const startIndex = (page - 1) * itemsPerPage;
-  const currentItems = filtered.slice(startIndex, startIndex + itemsPerPage);
-  const totalPages = Math.ceil(filtered.length / itemsPerPage) || 1;
-
-  const handleSave = (e) => {
+  const handleAddAppointment = (e) => {
     e.preventDefault();
-    if (modalData.id) {
-      setAppointments(
-        appointments.map((item) =>
-          item.id === modalData.id ? modalData : item,
-        ),
-      );
-    } else {
-      setAppointments([
-        { ...modalData, id: Date.now(), day: "Monday" },
-        ...appointments,
-      ]);
-    }
-    setModalData(null);
+
+    const newAppointment = {
+      id: Date.now(),
+      patientName: patientName,
+      patientPhone: patientPhone,
+      doctorName: doctorName,
+      doctorSpecialty: "General Dentist",
+      date: date,
+      day: "Monday",
+      time: time,
+      status: "Confirmed",
+    };
+
+    const updatedAppointments = [newAppointment, ...appointments];
+
+    setAppointments(updatedAppointments);
+    localStorage.setItem(
+      "my_appointments",
+      JSON.stringify(updatedAppointments),
+    );
+
+    setShowModal(false);
+    setPatientName("");
+    setPatientPhone("");
+    setDate("");
+    setTime("");
   };
 
   return (
@@ -113,9 +115,9 @@ export default function Appointments() {
           <div className="stat-info">
             <span>Total Appointments</span>
             <h3>{appointments.length}</h3>
-            <small>This Month</small>
           </div>
         </div>
+
         <div className="stat-card green">
           <div className="stat-icon">
             <i className="bi bi-check-circle-fill" />
@@ -125,9 +127,9 @@ export default function Appointments() {
             <h3>
               {appointments.filter((a) => a.status === "Confirmed").length}
             </h3>
-            <small>This Month</small>
           </div>
         </div>
+
         <div className="stat-card orange">
           <div className="stat-icon">
             <i className="bi bi-clock-fill" />
@@ -135,9 +137,9 @@ export default function Appointments() {
           <div className="stat-info">
             <span>Pending</span>
             <h3>{appointments.filter((a) => a.status === "Pending").length}</h3>
-            <small>This Month</small>
           </div>
         </div>
+
         <div className="stat-card red">
           <div className="stat-icon">
             <i className="bi bi-x-circle-fill" />
@@ -147,7 +149,6 @@ export default function Appointments() {
             <h3>
               {appointments.filter((a) => a.status === "Cancelled").length}
             </h3>
-            <small>This Month</small>
           </div>
         </div>
       </div>
@@ -156,21 +157,15 @@ export default function Appointments() {
         <div className="filter-group">
           <input
             type="text"
-            placeholder="Search..."
+            placeholder="Search by name or phone..."
             className="input-field search-input"
             value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPage(1);
-            }}
+            onChange={(e) => setSearch(e.target.value)}
           />
           <select
             className="input-field select-input"
-            value={status}
-            onChange={(e) => {
-              setStatus(e.target.value);
-              setPage(1);
-            }}
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
           >
             <option value="">All Status</option>
             <option value="Confirmed">Confirmed</option>
@@ -181,26 +176,13 @@ export default function Appointments() {
             className="btn-reset"
             onClick={() => {
               setSearch("");
-              setStatus("");
-              setPage(1);
+              setStatusFilter("");
             }}
           >
             Reset
           </button>
         </div>
-        <button
-          className="btn-add-new"
-          onClick={() =>
-            setModalData({
-              patientName: "",
-              patientPhone: "",
-              doctorName: "Dr. Sarah Ahmed",
-              date: "",
-              time: "",
-              status: "Confirmed",
-            })
-          }
-        >
+        <button className="btn-add-new" onClick={() => setShowModal(true)}>
           + New Appointment
         </button>
       </div>
@@ -216,13 +198,12 @@ export default function Appointments() {
                 <th>DATE</th>
                 <th>TIME</th>
                 <th>STATUS</th>
-                <th>ACTIONS</th>
               </tr>
             </thead>
             <tbody>
-              {currentItems.map((item, idx) => (
+              {filteredAppointments.map((item, index) => (
                 <tr key={item.id}>
-                  <td>{startIndex + idx + 1}</td>
+                  <td>{index + 1}</td>
                   <td>
                     <div className="user-cell">
                       <div className="avatar-icon">
@@ -239,7 +220,7 @@ export default function Appointments() {
                   <td>
                     <div className="doctor-cell">
                       <strong>{item.doctorName}</strong>
-                      <small>{item.doctorSpecialty || "General Dentist"}</small>
+                      <small>{item.doctorSpecialty}</small>
                     </div>
                   </td>
                   <td>
@@ -256,126 +237,83 @@ export default function Appointments() {
                       {item.status}
                     </span>
                   </td>
-                  <td>
-                    <button
-                      className="btn-action edit"
-                      onClick={() => setModalData(item)}
-                    >
-                      <i className="bi bi-pencil" />
-                    </button>
-                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-
-        <div className="table-footer">
-          <span>
-            Showing {currentItems.length} of {filtered.length}
-          </span>
-          <div className="pagination">
-            <button
-              className="page-btn"
-              disabled={page === 1}
-              onClick={() => setPage(page - 1)}
-            >
-              &lt;
-            </button>
-            {Array.from({ length: totalPages }, (_, i) => (
-              <button
-                key={i}
-                className={`page-btn ${page === i + 1 ? "active" : ""}`}
-                onClick={() => setPage(i + 1)}
-              >
-                {i + 1}
-              </button>
-            ))}
-            <button
-              className="page-btn"
-              disabled={page === totalPages}
-              onClick={() => setPage(page + 1)}
-            >
-              &gt;
-            </button>
-          </div>
-        </div>
       </div>
 
-      {modalData && (
+      {showModal && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <h3>{modalData.id ? "Edit Appointment" : "Add Appointment"}</h3>
-            <form onSubmit={handleSave}>
+            <h3>Add New Appointment</h3>
+            <form onSubmit={handleAddAppointment}>
               <div className="form-group">
                 <label>Patient Name</label>
                 <input
                   type="text"
                   className="input-field"
-                  value={modalData.patientName}
-                  onChange={(e) =>
-                    setModalData({ ...modalData, patientName: e.target.value })
-                  }
+                  value={patientName}
+                  onChange={(e) => setPatientName(e.target.value)}
                   required
                 />
               </div>
+
               <div className="form-group">
                 <label>Phone Number</label>
                 <input
                   type="text"
                   className="input-field"
-                  value={modalData.patientPhone}
-                  onChange={(e) =>
-                    setModalData({ ...modalData, patientPhone: e.target.value })
-                  }
+                  value={patientPhone}
+                  onChange={(e) => setPatientPhone(e.target.value)}
                   required
                 />
               </div>
+
               <div className="form-group">
                 <label>Date</label>
                 <input
                   type="date"
                   className="input-field"
-                  value={modalData.date}
-                  onChange={(e) =>
-                    setModalData({ ...modalData, date: e.target.value })
-                  }
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
                   required
                 />
               </div>
+
               <div className="form-group">
                 <label>Time</label>
                 <input
                   type="text"
                   className="input-field"
-                  value={modalData.time}
-                  onChange={(e) =>
-                    setModalData({ ...modalData, time: e.target.value })
-                  }
+                  placeholder="e.g. 10:00 AM"
+                  value={time}
+                  onChange={(e) => setTime(e.target.value)}
                   required
                 />
               </div>
+
               <div className="form-group">
                 <label>Doctor</label>
                 <select
                   className="input-field"
-                  value={modalData.doctorName}
-                  onChange={(e) =>
-                    setModalData({ ...modalData, doctorName: e.target.value })
-                  }
+                  value={doctorName}
+                  onChange={(e) => setDoctorName(e.target.value)}
                 >
-                  {doctors.map((d, i) => (
-                    <option key={i} value={d}>
-                      {d}
-                    </option>
-                  ))}
+                  <option value="Dr. Sarah Ahmed">Dr. Sarah Ahmed</option>
+                  <option value="Dr. Ahmed Hassan">Dr. Ahmed Hassan</option>
+                  <option value="Dr. Mostafa Elsayad">
+                    Dr. Mostafa Elsayad
+                  </option>
                 </select>
               </div>
+
               <div className="modal-actions">
                 <button
                   type="button"
                   className="btn-reset"
-                  onClick={() => setModalData(null)}
+                  onClick={() => setShowModal(false)}
                 >
                   Cancel
                 </button>
