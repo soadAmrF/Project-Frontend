@@ -160,6 +160,7 @@ export default function Reception() {
       </div>
 
       <div className="table-section">
+        {/* شريط الفلترة والأزرار المعدل */}
         <div className="table-header-tools">
           <div className="left-tools">
             <div className="search-wrapper">
@@ -195,6 +196,7 @@ export default function Reception() {
             + New Check-In
           </button>
         </div>
+
         <div className="table-responsive">
           <table className="patients-table">
             <thead>
@@ -224,7 +226,9 @@ export default function Reception() {
                   <td>{p.time}</td>
                   <td>
                     <span
-                      className={`status-tag ${p.status.toLowerCase().replace(" ", "-")}`}
+                      className={`status-tag ${p.status
+                        .toLowerCase()
+                        .replace(" ", "-")}`}
                     >
                       {p.status}
                     </span>
