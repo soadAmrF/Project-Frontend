@@ -104,7 +104,13 @@ export default function Navbar({ setOpenSidebar, setSearchQuery }) {
 
         <div className="user-dropdown" ref={userMenuRef}>
           <button className="user-btn" onClick={() => setOpenMenu(!openMenu)}>
-            <div className="avatar">{user?.name?.charAt(0).toUpperCase()}</div>
+            <div className="avatar">
+              {user?.image ? (
+                <img src={user.image} alt={user.name} />
+              ) : (
+                user?.name?.charAt(0)?.toUpperCase() || "?"
+              )}
+            </div>
 
             <div className="d-none d-md-block">
               <h6>{user?.name}</h6>

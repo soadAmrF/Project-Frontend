@@ -116,7 +116,16 @@ export default function Sidebar({ openSidebar, setOpenSidebar }) {
         </div>
 
         <div className="sidebar-user">
-          <div className="avatar">{user?.name?.charAt(0)?.toUpperCase()}</div>
+          <div className="avatar">
+            {user?.image ? (
+              <img
+                src={user.image} alt={user.name}
+                className="w-100 h-100"
+                style={{objectFit: "cover", borderRadius: "50%", }} />
+            ) : (
+              user?.name?.charAt(0)?.toUpperCase()
+            )}
+          </div>
 
           <div>
             <h6>{user?.name}</h6>

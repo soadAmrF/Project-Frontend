@@ -1,34 +1,39 @@
-
-export default function DoctorTable({doctors}) {
+export default function DoctorTable({ doctors }) {
   return (
     <div className="table-responsive">
       <table className="table align-middle">
         <thead>
           <tr>
             <th>Doctor</th>
+            <th>degree</th>
             <th>Specialization</th>
             <th>Phone</th>
-            <th>Email</th>
             <th>Working Days</th>
+            <th>Fees</th>
             <th>Status</th>
-            <th>Patients</th>
             <th>Actions</th>
           </tr>
         </thead>
 
         <tbody>
-          {doctors.map((doctor, index) => (
-            <tr key={index}>
+          {doctors.map((doctor) => (
+            <tr key={doctor._id}>
               <td>
                 <div className="doctor-name">
-                  <div className="avatar">{doctor.userId?.name.charAt(4)}</div>
+                  <div className="avatar">
+                    {doctor.userId?.name?.charAt(0).toUpperCase()}
+                  </div>
 
                   <div>
                     <strong>{doctor.userId?.name}</strong>
-                    <br />
-                    <small>Dentist</small>
                   </div>
                 </div>
+              </td>
+
+              <td>
+                <span>
+                  <strong>{doctor.degree}</strong>
+                </span>
               </td>
 
               <td>
@@ -37,16 +42,23 @@ export default function DoctorTable({doctors}) {
                 </span>
               </td>
 
-              <td>{doctor.phone}</td>
+              <td>{doctor.userId?.phone}</td>
+              <td>{doctor.workingDays?.join(", ")}</td>
+
+              <td className="text-primary fw-bold">${doctor.fees}</td>
 
               <td>
-                <span className="badge bg-success-subtle text-success">
-                  ● {doctor.status}
+                <span
+                  className={`badge ${
+                    doctor.isActive
+                      ? "bg-success-subtle text-success"
+                      : "bg-danger-subtle text-danger"
+                  }`}
+                >
+                  {doctor.isActive ? "Active" : "Inactive"}
                 </span>
               </td>
-
-              <td className="text-primary fw-bold">{doctor.patients}</td>
-
+              
               <td>
                 <button className="btn btn-light btn-sm">
                   <i className="bi bi-eye"></i>
