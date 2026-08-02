@@ -325,9 +325,6 @@ export default function Patients() {
                   </td>
                   <td className="center-text">
                     <div className="actions-cell">
-                      <button className="action-btn view-btn" title="View">
-                        <i className="bi bi-eye"></i>
-                      </button>
                       <button
                         className="action-btn edit-btn"
                         title="Edit"
@@ -381,6 +378,7 @@ export default function Patients() {
                   <input
                     type="text"
                     required
+                    placeholder="e.g. Ahmed Mohammed"
                     className="styled-input"
                     value={formData.name}
                     onChange={(e) =>
@@ -393,6 +391,7 @@ export default function Patients() {
                   <input
                     type="text"
                     required
+                    placeholder="010xxxxxxx"
                     className="styled-input"
                     value={formData.phone}
                     onChange={(e) =>
@@ -441,6 +440,7 @@ export default function Patients() {
                     <label>Doctor Name</label>
                     <input
                       type="text"
+                      placeholder="e.g. Dr. Mostafa Ali"
                       className="styled-input"
                       value={formData.doctor}
                       onChange={(e) =>
@@ -452,6 +452,7 @@ export default function Patients() {
                     <label>Diagnosis</label>
                     <input
                       type="text"
+                      placeholder="e.g. Root Canal"
                       className="styled-input"
                       value={formData.diagnosis}
                       onChange={(e) =>
@@ -468,6 +469,7 @@ export default function Patients() {
                     <label>X-Ray Type</label>
                     <input
                       type="text"
+                      placeholder="e.g. Panoramic"
                       className="styled-input"
                       value={formData.xrayType}
                       onChange={(e) =>
@@ -479,6 +481,7 @@ export default function Patients() {
                     <label>Target Area</label>
                     <input
                       type="text"
+                      placeholder="e.g. Upper Jaw"
                       className="styled-input"
                       value={formData.targetArea}
                       onChange={(e) =>
@@ -495,6 +498,7 @@ export default function Patients() {
                     <label>Test Name</label>
                     <input
                       type="text"
+                      placeholder="e.g. CBC Test"
                       className="styled-input"
                       value={formData.testName}
                       onChange={(e) =>
@@ -506,6 +510,7 @@ export default function Patients() {
                     <label>Test Result</label>
                     <input
                       type="text"
+                      placeholder="e.g. 13.5 g/dL"
                       className="styled-input"
                       value={formData.testResult}
                       onChange={(e) =>
@@ -517,15 +522,15 @@ export default function Patients() {
               )}
 
               <div className="modal-actions">
+                <button type="submit" className="btn-save">
+                  {editId ? "Update Record" : "Save Record"}
+                </button>
                 <button
                   type="button"
                   className="btn-cancel"
                   onClick={() => setShowModal(false)}
                 >
                   Cancel
-                </button>
-                <button type="submit" className="btn-save">
-                  {editId ? "Update Record" : "Save Record"}
                 </button>
               </div>
             </form>
