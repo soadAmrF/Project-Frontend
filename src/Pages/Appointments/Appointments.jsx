@@ -105,8 +105,7 @@ export default function Appointments() {
 
   return (
     <div className="appointments-page">
-      <PageHeader title="Appointments" breadcrumb="Home / Appointments" />
-
+      <PageHeader />
       <div className="stats-grid">
         <div className="stat-card blue">
           <div className="stat-icon">
