@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "@/services/axios";
+import { jwtDecode } from "jwt-decode";
 import "@/Pages/Auth/Login//login.css";
 import byImage from "@/assets/image/clinic.jpg";
 import logoImg from "@/assets/image/teeth.png";
@@ -32,6 +33,9 @@ const LoginPage = () => {
       const response = await axios.post("/auth", form);
 
       const token = response.data.data.token;
+
+      console.log(response.data);
+      console.log(jwtDecode(token));
 
       localStorage.setItem("token", token);
 

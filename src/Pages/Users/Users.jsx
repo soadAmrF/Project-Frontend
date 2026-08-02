@@ -34,6 +34,7 @@ const Users = () => {
 
       setUsers(res.data.users);
     } catch (error) {
+      console.log(error.response);
       setErrorMessage(error.response?.data?.message || "Cannot fetch users");
     }
   };
@@ -102,7 +103,7 @@ const Users = () => {
 
   const { searchQuery } = useOutletContext();
 
-console.log(searchQuery);
+// console.log(searchQuery);
 
   return (
     <div className="container-fluid users-page">

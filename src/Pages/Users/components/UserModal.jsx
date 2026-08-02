@@ -1,21 +1,14 @@
 import { useEffect, useState } from "react";
 
-const permissionsList = [
-  "dashboard.view",
-  "users.view",
-  "users.create",
-  "users.update",
-  "users.delete",
-];
-
 const UserModal = ({ user, onClose, onSave, errorMessage }) => {
   const [formData, setFormData] = useState({
     name: "",
     fullname: "",
+    phone: "",
     password: "",
-    role: "employee",
-    permissions: [],
+    role: "receptionist",
     isActive: true,
+    image: null,
   });
 
   useEffect(() => {
@@ -23,16 +16,34 @@ const UserModal = ({ user, onClose, onSave, errorMessage }) => {
       setFormData({
         name: user.name || "",
         fullname: user.fullname || "",
+        phone: user.phone || "",
         password: "",
-        role: user.role || "employee",
-        permissions: user.permissions || [],
+        role: user.role || "receptionist",
         isActive: user.isActive,
+      });
+    } else {
+      setFormData({
+        name: "",
+        fullname: "",
+        phone: "",
+        password: "",
+        role: "receptionist",
+        isActive: true,
+        image: null,
       });
     }
   }, [user]);
 
   const handleChange = (e) => {
     const { name, value, checked, type } = e.target;
+
+    if (type === "file") {
+      setFormData((prev) => ({
+        ...prev,
+        image: e.target.files[0],
+      }));
+      return;
+    }
 
     if (type === "checkbox" && name === "isActive") {
       setFormData((prev) => ({
@@ -48,27 +59,23 @@ const UserModal = ({ user, onClose, onSave, errorMessage }) => {
     }));
   };
 
-  const handlePermission = (permission) => {
-    if (formData.permissions.includes(permission)) {
-      setFormData((prev) => ({
-        ...prev,
-        permissions: prev.permissions.filter((p) => p !== permission),
-      }));
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        permissions: [...prev.permissions, permission],
-      }));
-    }
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const data = { ...formData };
+    const data = new FormData();
 
-    if (!data.password) {
-      delete data.password;
+    data.append("name", formData.name);
+    data.append("fullname", formData.fullname);
+    data.append("phone", formData.phone);
+    data.append("role", formData.role);
+    data.append("isActive", formData.isActive);
+
+    if (formData.password) {
+      data.append("password", formData.password);
+    }
+
+    if (formData.image) {
+      data.append("image", formData.image);
     }
 
     onSave(data);
@@ -80,7 +87,7 @@ const UserModal = ({ user, onClose, onSave, errorMessage }) => {
         className="modal fade show d-block"
         style={{ background: "rgba(0,0,0,.5)" }}
       >
-        <div className="modal-dialog modal-lg modal-dialog-centered">
+        <div className="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title">{user ? "Edit User" : "Add User"}</h5>
@@ -125,19 +132,44 @@ const UserModal = ({ user, onClose, onSave, errorMessage }) => {
                   </div>
 
                   <div className="col-md-6 mb-3">
-                    <label className="form-label">Password</label>
+                    <label className="form-label">Phone</label>
 
                     <input
-                      type="password"
+                      type="text"
                       className="form-control"
-                      name="password"
-                      placeholder={
-                        user ? "Leave blank to keep password" : "Password"
-                      }
-                      value={formData.password}
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+
+                  <div className="col-md-6 mb-3">
+                    <label className="form-label">Profile Image</label>
+
+                    <input
+                      type="file"
+                      className="form-control"
+                      name="image"
+                      accept="image/*"
                       onChange={handleChange}
                     />
                   </div>
+
+                  {!user && (
+                    <div className="col-md-6 mb-3">
+                      <label className="form-label">Password</label>
+
+                      <input
+                        type="password"
+                        className="form-control"
+                        name="password"
+                        value={formData.password}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+                  )}
 
                   <div className="col-md-6 mb-3">
                     <label className="form-label">Role</label>
@@ -148,32 +180,11 @@ const UserModal = ({ user, onClose, onSave, errorMessage }) => {
                       value={formData.role}
                       onChange={handleChange}
                     >
-                      <option value="employee">Employee</option>
-
+                      <option value="receptionist">Receptionist</option>
+                      <option value="doctor">Doctor</option>
                       <option value="admin">Admin</option>
                     </select>
                   </div>
-                </div>
-
-                <hr />
-
-                <h6 className="mb-3">Permissions</h6>
-
-                <div className="row">
-                  {permissionsList.map((permission) => (
-                    <div className="col-md-6" key={permission}>
-                      <div className="form-check mb-2">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          checked={formData.permissions.includes(permission)}
-                          onChange={() => handlePermission(permission)}
-                        />
-
-                        <label className="form-check-label">{permission}</label>
-                      </div>
-                    </div>
-                  ))}
                 </div>
 
                 {user && (

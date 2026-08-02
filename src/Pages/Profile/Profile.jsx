@@ -3,6 +3,7 @@ import { jwtDecode } from "jwt-decode";
 export default function Profile() {
   const token = localStorage.getItem("token");
   const user = token ? jwtDecode(token) : null;
+  console.log(user)
 
   return (
     <div className="container-fluid py-4">
@@ -52,7 +53,7 @@ export default function Profile() {
                 <div className="col-md-6 mb-4">
                   <label className="text-muted small">Full Name</label>
 
-                  <h6 className="fw-semibold">{user?.name || "-"}</h6>
+                  <h6 className="fw-semibold">{user?.fullname || "-"}</h6>
                 </div>
 
                 <div className="col-md-6 mb-4">

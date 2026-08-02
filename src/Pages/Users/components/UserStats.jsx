@@ -3,7 +3,11 @@ const UserStats = ({ users }) => {
 
   const admins = users.filter((user) => user.role === "admin").length;
 
-  const employees = users.filter((user) => user.role === "employee").length;
+  const doctors = users.filter((user) => user.role === "doctor").length;
+
+  const receptionists = users.filter(
+    (user) => user.role === "receptionist",
+  ).length;
 
   const activeUsers = users.filter((user) => user.isActive).length;
 
@@ -21,16 +25,16 @@ const UserStats = ({ users }) => {
       icon: "bi-shield-lock-fill",
     },
     {
-      title: "Employees",
-      value: employees,
+      title: "Doctors",
+      value: doctors,
       color: "success",
       icon: "bi-person-badge-fill",
     },
     {
-      title: "Active Users",
-      value: activeUsers,
-      color: "warning",
-      icon: "bi-person-check-fill",
+      title: "Receptionists",
+      value: receptionists,
+      color: "info",
+      icon: "bi-person-workspace",
     },
   ];
 

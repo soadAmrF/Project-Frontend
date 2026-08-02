@@ -2,6 +2,7 @@ import PageHeader from "@/components/PageHeader";
 import DoctorStats from "./components/DoctorStats";
 import SearchBar from "./components/SearchBar";
 import DoctorTable from "./components/DoctorTable";
+import AddDoctorModal from "./components/AddDoctorModal";
 
 import { useEffect, useState } from "react";
 import { getDoctors } from "@/services/api";
@@ -10,6 +11,7 @@ import "./doctors.css";
 
 export default function Doctors() {
   const [doctors, setDoctors] = useState([]);
+  const [showModal, setShowModal] = useState(false);
 
   const fetchDoctors = async () => {
     try {
@@ -24,28 +26,40 @@ export default function Doctors() {
     fetchDoctors();
   }, []);
   return (
-    <div className="container-fluid">
+    <div className="reception-page">
       <PageHeader />
-
-      <div className="d-flex justify-content-end gap-2 mb-4">
-        <button className="btn btn-light border">
-          <i className="bi bi-funnel me-2"></i>
-          Filter
-        </button>
-
-        <button className="btn btn-primary">
-          <i className="bi bi-plus-lg me-2"></i>
-          Add Doctor
-        </button>
-      </div>
 
       <DoctorStats />
 
-      <div className="doctor-table-card mt-4">
-        <SearchBar />
+       <div className="table-section">
+        <div className="table-header-tools">
+          <div className="left-tools">
+            <SearchBar />
 
+            <button className="btn btn-light border">
+              <i className="bi bi-funnel me-2"></i>
+              Filter
+            </button>
+          </div>
+
+          <button
+            className="btn-add"
+            onClick={() => setShowModal(true)}
+          >
+            + Add Doctor
+          </button>
+        </div>
+
+        
         <DoctorTable doctors={doctors} />
       </div>
+
+      {showModal && (
+        <AddDoctorModal
+          onClose={() => setShowModal(false)}
+          fetchDoctors={fetchDoctors}
+        />
+      )}
     </div>
   );
 }

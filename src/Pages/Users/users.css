@@ -34,6 +34,7 @@
 
 .table td,
 .table th{
+    color: rgba(0, 0, 0, 0.715);
     vertical-align:middle;
     white-space:nowrap;
 }
@@ -58,6 +59,53 @@
 
 .form-control{
     box-shadow:none !important;
+}
+
+
+.user-modal{
+    position: fixed !important;
+    inset: 0;
+    z-index: 9999;
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+}
+
+.user-modal .modal-dialog{
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto !important;
+}
+
+.user-modal .modal-content{
+    border-radius: 16px;
+    max-height: 90vh;
+}
+
+.user-modal .modal-body{
+    max-height: calc(90vh - 150px);
+    overflow-y: auto;
+}
+
+@media (max-width:768px){
+
+.user-modal{
+    align-items:flex-start;
+    padding-top:20px;
+}
+
+.user-modal .modal-dialog{
+    max-width:calc(100% - 20px);
+}
+
+.user-modal .modal-footer{
+    flex-direction:column;
+}
+
+.user-modal .modal-footer .btn{
+    width:100%;
+}
+
 }
 
 
