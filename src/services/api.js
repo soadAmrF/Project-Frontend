@@ -33,3 +33,25 @@ export const createDoctor = (data) => api.post("/doctors", data);
 export const updateDoctor = (id, data) => api.put(`/doctors/${id}`, data);
 
 export const deleteDoctor = (id) => api.delete(`/doctors/${id}`);
+
+// ////////////// Appointments ////////////////////
+
+export const getAppointments = () => api.get("/appointments");
+
+export const createAppointment = (data) => api.post("/appointments", data);
+
+export const updateAppointment = (id, data) =>
+  api.patch(`/appointments/${id}`, data);
+
+export const deleteAppointment = (id) => api.delete(`/appointments/${id}`);
+
+// Patients API Endpoints
+export const getPatients = () => api.get("/patients");
+export const getPatientById = (id) => api.get(`/patients/${id}`);
+export const addPatient = (patientData) => api.post("/patients", patientData);
+export const updatePatient = (id, patientData) =>
+  api.put(`/patients/${id}`, patientData);
+// Medical Records API
+export const createMedicalRecord = (recordData) =>
+  api.post("/medical-records", recordData);
+export const getMedicalRecords = () => api.get("/medical-records");
