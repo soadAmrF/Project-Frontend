@@ -91,7 +91,6 @@ export default function Appointments() {
     localStorage.setItem("my_appointments", JSON.stringify(updatedList));
   };
 
-  // حذف مباشر بدون رسالة confirmation
   const handleDeleteAppointment = (id) => {
     const updatedList = appointments.filter((item) => item._id !== id);
     setAppointments(updatedList);

@@ -51,7 +51,25 @@ export const getPatientById = (id) => api.get(`/patients/${id}`);
 export const addPatient = (patientData) => api.post("/patients", patientData);
 export const updatePatient = (id, patientData) =>
   api.put(`/patients/${id}`, patientData);
+
 // Medical Records API
 export const createMedicalRecord = (recordData) =>
   api.post("/medical-records", recordData);
 export const getMedicalRecords = () => api.get("/medical-records");
+
+// ////////////// Treatments ////////////////////
+
+export const getTreatments = () => api.get("/treatments");
+
+export const getTreatmentById = (id) => api.get(`/treatments/${id}`);
+
+export const createTreatment = (data) => api.post("/treatments", data);
+
+export const updateTreatment = (id, data) => api.put(`/treatments/${id}`, data);
+
+export const deleteTreatment = (id) => api.delete(`/treatments/${id}`);
+
+// ////////////// Lab Orders ////////////////////
+export const getLabOrders = async () => {
+  return await axios.get("/api/lab-orders"); // استبدل المسار بما يتوافق مع API الـ Express لديك
+};
