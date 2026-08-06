@@ -1,127 +1,194 @@
-import React, { useState, useEffect } from "react";
-import PageHeader from "@/components/PageHeader";
-import { getAppointments, getDoctors, updateAppointment } from "@/services/api";
-import AppointmentStats from "./Components/AppointmentStats";
-import AppointmentModal from "./Components/AppointmentModal";
-import "./Appointments.css";
+import { useEffect, useState } from "react";
+import {
+  getAppointments,
+  getPatients,
+  getDoctors,
+  createAppointment,
+  updateAppointment,
+} from "../../services/api";
 
-const dummyAppointments = [
-  {
-    _id: "1",
-    patientId: { name: "Assem Monir", phone: "145269741254" },
-    doctorId: { name: "Dr. Sarah Ahmed" },
-    dateAndTime: "2026-12-02T22:00:00.000Z",
-    reason: "Checkup",
-    status: "scheduled",
-  },
-  {
-    _id: "2",
-    patientId: { name: "Ahmed Mohamed", phone: "01123456789" },
-    doctorId: { name: "Dr. Sarah Ahmed" },
-    dateAndTime: "2026-05-26T10:00:00.000Z",
-    reason: "Root Canal",
-    status: "scheduled",
-  },
-  {
-    _id: "3",
-    patientId: { name: "Mona Ali", phone: "01098765432" },
-    doctorId: { name: "Dr. Ahmed Hassan" },
-    dateAndTime: "2026-05-26T11:30:00.000Z",
-    reason: "Consultation",
-    status: "completed",
-  },
-];
+import "./Appointments.css";
+import PageHeader from "@/components/PageHeader";
 
 export default function Appointments() {
-  const [appointments, setAppointments] = useState(() => {
-    const saved = localStorage.getItem("my_appointments");
-    return saved ? JSON.parse(saved) : dummyAppointments;
-  });
+  const [appointments, setAppointments] = useState([]);
+  const [patients, setPatients] = useState([]);
+  const [doctors, setDoctors] = useState([]);
 
-  const [doctorsList, setDoctorsList] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [selectedAppointment, setSelectedAppointment] = useState(null);
+
+  const [formData, setFormData] = useState({
+    patientId: "",
+    doctorId: "",
+    dateAndTime: "",
+    reason: "",
+    status: "scheduled",
+  });
 
   useEffect(() => {
-    fetchAppointmentsData();
-    fetchDoctorsData();
+    fetchAppointments();
+    fetchPatients();
+    fetchDoctors();
   }, []);
 
-  const fetchAppointmentsData = async () => {
+  const fetchAppointments = async () => {
     try {
       const res = await getAppointments();
-      if (res?.data?.data && res.data.data.length > 0) {
-        setAppointments(res.data.data);
-      }
+      setAppointments(res.data.data);
     } catch (err) {
-      console.log("Using local/fallback data");
+      console.log(err);
     }
   };
 
-  const fetchDoctorsData = async () => {
+  const fetchPatients = async () => {
+    try {
+      const res = await getPatients();
+      setPatients(res.data.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const fetchDoctors = async () => {
     try {
       const res = await getDoctors();
-      if (res?.data) {
-        setDoctorsList(res.data.data || res.data);
-      }
+      setDoctors(res.data.data);
     } catch (err) {
-      console.log("Doctors API offline");
+      console.log(err);
     }
   };
 
-  const handleAddNewAppointment = (newItem) => {
-    const updated = [newItem, ...appointments];
-    setAppointments(updated);
-    localStorage.setItem("my_appointments", JSON.stringify(updated));
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
   };
 
-  const handleUpdateAppointment = async (updatedItem) => {
+  const handleSubmit = async () => {
     try {
-      await updateAppointment(updatedItem._id, updatedItem);
-    } catch (err) {
-      console.log("Backend offline, saving locally");
-    }
+      const data = {
+        ...formData,
+        dateAndTime: new Date(formData.dateAndTime).toISOString(),
+      };
 
-    const updatedList = appointments.map((item) =>
-      item._id === updatedItem._id ? updatedItem : item,
-    );
-    setAppointments(updatedList);
-    localStorage.setItem("my_appointments", JSON.stringify(updatedList));
+      if (editingId) {
+        await updateAppointment(editingId, data);
+      } else {
+        await createAppointment(data);
+      }
+
+      await fetchAppointments();
+
+      setShowModal(false);
+      setEditingId(null);
+
+      setFormData({
+        patientId: "",
+        doctorId: "",
+        dateAndTime: "",
+        reason: "",
+        status: "scheduled",
+      });
+    } catch (err) {
+      console.log(err);
+      alert(err.response?.data?.message || "Something went wrong");
+    }
   };
 
-  const handleDeleteAppointment = (id) => {
-    const updatedList = appointments.filter((item) => item._id !== id);
-    setAppointments(updatedList);
-    localStorage.setItem("my_appointments", JSON.stringify(updatedList));
+  const handleEdit = (appointment) => {
+    setEditingId(appointment.id);
+
+    setFormData({
+      patientId: appointment.patientId,
+      doctorId: appointment.doctorId,
+      dateAndTime: new Date(appointment.dateAndTime).toISOString().slice(0, 16),
+      reason: appointment.reason || "",
+      status: appointment.status,
+    });
+
+    setShowModal(true);
   };
 
   const filteredAppointments = appointments.filter((item) => {
-    const pName = item.patientId?.name || item.patientName || "";
-    const pPhone = item.patientId?.phone || item.patientPhone || "";
     const matchesSearch =
-      pName.toLowerCase().includes(search.toLowerCase()) ||
-      pPhone.includes(search);
+      item.patientName?.toLowerCase().includes(search.toLowerCase()) ||
+      item.phone?.includes(search);
+
     const matchesStatus = statusFilter === "" || item.status === statusFilter;
+
     return matchesSearch && matchesStatus;
   });
 
   return (
     <div className="appointments-page">
       <PageHeader />
+      <div className="stats-grid">
+        <div className="stat-card blue">
+          <div className="stat-icon">
+            <i className="bi bi-calendar-event-fill"></i>
+          </div>
 
-      <AppointmentStats appointments={appointments} />
+          <div className="stat-info">
+            <span>Total Appointments</span>
+            <h3>{appointments.length}</h3>
+          </div>
+        </div>
+
+        <div className="stat-card green">
+          <div className="stat-icon">
+            <i className="bi bi-check-circle-fill"></i>
+          </div>
+
+          <div className="stat-info">
+            <span>Scheduled</span>
+            <h3>
+              {appointments.filter((a) => a.status === "scheduled").length}
+            </h3>
+          </div>
+        </div>
+
+        <div className="stat-card orange">
+          <div className="stat-icon">
+            <i className="bi bi-clock-fill"></i>
+          </div>
+
+          <div className="stat-info">
+            <span>Completed</span>
+            <h3>
+              {appointments.filter((a) => a.status === "completed").length}
+            </h3>
+          </div>
+        </div>
+
+        <div className="stat-card red">
+          <div className="stat-icon">
+            <i className="bi bi-x-circle-fill"></i>
+          </div>
+
+          <div className="stat-info">
+            <span>Cancelled</span>
+            <h3>
+              {appointments.filter((a) => a.status === "cancelled").length}
+            </h3>
+          </div>
+        </div>
+      </div>
 
       <div className="filter-card">
         <div className="filter-group">
           <input
             type="text"
-            placeholder="Search by patient name or phone..."
             className="input-field search-input"
+            placeholder="Search patient..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
+
           <select
             className="input-field select-input"
             value={statusFilter}
@@ -133,123 +200,242 @@ export default function Appointments() {
             <option value="cancelled">Cancelled</option>
             <option value="missed">Missed</option>
           </select>
+
+          <button
+            className="btn-reset"
+            onClick={() => {
+              setSearch("");
+              setStatusFilter("");
+            }}
+          >
+            Reset
+          </button>
         </div>
-        <button className="btn-add-new" onClick={() => setShowAddModal(true)}>
+
+        <button
+          className="btn-add-new"
+          onClick={() => {
+            setEditingId(null);
+
+            setFormData({
+              patientId: "",
+              doctorId: "",
+              dateAndTime: "",
+              reason: "",
+              status: "scheduled",
+            });
+
+            setShowModal(true);
+          }}
+        >
           + New Appointment
         </button>
       </div>
+      <div className="table-card">
+        <div className="table-responsive">
+          <table className="custom-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>PATIENT</th>
+                <th>DOCTOR</th>
+                <th>PHONE</th>
+                <th>DATE & TIME</th>
+                <th>REASON</th>
+                <th>STATUS</th>
+                <th>ACTION</th>
+              </tr>
+            </thead>
 
-      <div className="table-card table-responsive">
-        <table className="custom-table">
-          <thead>
-            <tr>
-              <th># ID</th>
-              <th>PATIENT</th>
-              <th>DOCTOR</th>
-              <th>DATE & TIME</th>
-              <th>REASON</th>
-              <th>STATUS</th>
-              <th style={{ textAlign: "center" }}>ACTIONS</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredAppointments.length > 0 ? (
-              filteredAppointments.map((row, index) => (
-                <tr key={row._id || index}>
-                  <td>{index + 1}</td>
-                  <td>
-                    <div className="patient-user-cell">
-                      <div className="patient-icon-avatar">
-                        <i className="bi bi-person-fill"></i>
+            <tbody>
+              {filteredAppointments.length > 0 ? (
+                filteredAppointments.map((appointment, index) => (
+                  <tr key={appointment.id}>
+                    <td>{index + 1}</td>
+
+                    <td>
+                      <div className="user-cell">
+                        <div className="avatar-icon">
+                          <i className="bi bi-person-fill"></i>
+                        </div>
+
+                        <div className="user-details">
+                          <strong>{appointment.patientName}</strong>
+                        </div>
                       </div>
-                      <span className="patient-name">
-                        {row.patientId?.name || row.patientName || "N/A"}
-                      </span>
-                    </div>
-                  </td>
-                  <td>
-                    <strong>
-                      {row.doctorId?.name ||
-                        row.doctorName ||
-                        "Dr. Sarah Ahmed"}
-                    </strong>
-                  </td>
-                  <td>{new Date(row.dateAndTime).toLocaleString()}</td>
-                  <td>{row.reason || "-"}</td>
-                  <td>
-                    <span
-                      className={`status-pill ${row.status
-                        .toLowerCase()
-                        .replace(" ", "-")}`}
-                    >
-                      {row.status}
-                    </span>
-                  </td>
-                  <td style={{ textAlign: "center" }}>
-                    <div
-                      style={{
-                        display: "flex",
-                        gap: "8px",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <button
-                        onClick={() => setSelectedAppointment(row)}
-                        style={{
-                          backgroundColor: "#e8f2ff",
-                          color: "#1877f2",
-                          border: "none",
-                          borderRadius: "8px",
-                          padding: "8px 10px",
-                          cursor: "pointer",
-                          display: "inline-flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <i className="bi bi-pencil"></i>
-                      </button>
+                    </td>
 
-                      <button
-                        onClick={() => handleDeleteAppointment(row._id)}
-                        style={{
-                          backgroundColor: "#fde8e8",
-                          color: "#e02424",
-                          border: "none",
-                          borderRadius: "8px",
-                          padding: "8px 10px",
-                          cursor: "pointer",
-                          display: "inline-flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
+                    <td>
+                      <div className="doctor-cell">
+                        <strong>{appointment.doctorName}</strong>
+                      </div>
+                    </td>
+
+                    <td>{appointment.phone}</td>
+
+                    <td>
+                      <div className="date-cell">
+                        <strong>
+                          {new Date(
+                            appointment.dateAndTime,
+                          ).toLocaleDateString()}
+                        </strong>
+
+                        <small>
+                          {new Date(appointment.dateAndTime).toLocaleTimeString(
+                            [],
+                            {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            },
+                          )}
+                        </small>
+                      </div>
+                    </td>
+
+                    <td>
+  {appointment.reason || "-"}
+</td>
+
+                    <td>
+                      <span
+                        className={`status-badge ${
+                          appointment.status === "scheduled"
+                            ? "confirmed"
+                            : appointment.status === "completed"
+                              ? "confirmed"
+                              : appointment.status === "cancelled"
+                                ? "cancelled"
+                                : "pending"
+                        }`}
                       >
-                        <i className="bi bi-trash"></i>
+                        {appointment.status}
+                      </span>
+                    </td>
+
+                    <td>
+                      <button
+                        className="btn-action"
+                        onClick={() => handleEdit(appointment)}
+                      >
+                        <i className="bi bi-pencil-fill"></i>
                       </button>
-                    </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="8" style={{ textAlign: "center", padding: 30 }}>
+                    No appointments found
                   </td>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td
-                  colSpan="7"
-                  style={{ textAlign: "center", padding: "20px" }}
-                >
-                  No appointments found.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      {showAddModal && (
-        <AppointmentModal
-          doctorsList={doctorsList}
-          onClose={() => setShowAddModal(false)}
-          onSaveSuccess={handleAddNewAppointment}
-        />
+      {showModal && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <div className="d-flex justify-content-between align-items-center mb-3">
+              <h3>{editingId ? "Edit Appointment" : "Add Appointment"}</h3>
+
+              <button
+                className="btn-close"
+                onClick={() => setShowModal(false)}
+              ></button>
+            </div>
+
+            <div className="form-group">
+              <label>Patient</label>
+
+              <select
+                className="input-field"
+                name="patientId"
+                value={formData.patientId}
+                onChange={handleChange}
+              >
+                <option value="">Select Patient</option>
+
+                {patients.map((patient) => (
+                  <option key={patient._id} value={patient._id}>
+                    {patient.fullName}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label>Doctor</label>
+
+              <select
+                className="input-field"
+                name="doctorId"
+                value={formData.doctorId}
+                onChange={handleChange}
+              >
+                <option value="">Select Doctor</option>
+
+                {doctors.map((doctor) => (
+                  <option key={doctor._id} value={doctor._id}>
+                    {doctor.userId.fullname}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label>Date & Time</label>
+
+              <input
+                type="datetime-local"
+                className="input-field"
+                name="dateAndTime"
+                value={formData.dateAndTime}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Reason</label>
+
+              <textarea
+                rows="3"
+                className="input-field"
+                name="reason"
+                value={formData.reason}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Status</label>
+
+              <select
+                className="input-field"
+                name="status"
+                value={formData.status}
+                onChange={handleChange}
+              >
+                <option value="scheduled">Scheduled</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+                <option value="missed">Missed</option>
+              </select>
+            </div>
+
+            <div className="modal-actions">
+              <button className="btn-reset" onClick={() => setShowModal(false)}>
+                Cancel
+              </button>
+
+              <button className="btn-add-new" onClick={handleSubmit}>
+                {editingId ? "Update" : "Save"}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
