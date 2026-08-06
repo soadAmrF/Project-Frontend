@@ -34,21 +34,24 @@ export const updateDoctor = (id, data) => api.put(`/doctors/${id}`, data);
 
 export const deleteDoctor = (id) => api.delete(`/doctors/${id}`);
 
-// ////////////// Appointments ////////////////////
+// ////////////////// Appointments //////////////////
 
-export const getAppointments = () => api.get("/appointments");
+export const getAppointments = () => api.get("/appointment");
 
-export const createAppointment = (data) => api.post("/appointments", data);
+export const createAppointment = (data) =>
+  api.post("/appointment", data);
 
 export const updateAppointment = (id, data) =>
-  api.patch(`/appointments/${id}`, data);
+  api.patch(`/appointment/${id}`, data);
 
-export const deleteAppointment = (id) => api.delete(`/appointments/${id}`);
+export const deleteAppointment = (id) =>
+  api.delete(`/appointment/${id}`);
+
 
 // Patients API Endpoints
-export const getPatients = () => api.get("/patients");
-export const getPatientById = (id) => api.get(`/patients/${id}`);
-export const addPatient = (patientData) => api.post("/patients", patientData);
+export const getPatients = () => api.get("/patient");
+export const getPatientById = (id) => api.get(`/patient/${id}`);
+export const addPatient = (patientData) => api.post("/patient", patientData);
 export const updatePatient = (id, patientData) =>
   api.put(`/patients/${id}`, patientData);
 
@@ -71,5 +74,5 @@ export const deleteTreatment = (id) => api.delete(`/treatments/${id}`);
 
 // ////////////// Lab Orders ////////////////////
 export const getLabOrders = async () => {
-  return await axios.get("/api/lab-orders"); // استبدل المسار بما يتوافق مع API الـ Express لديك
+  return await axios.get("/api/lab-orders");
 };
