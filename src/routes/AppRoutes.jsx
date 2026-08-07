@@ -16,6 +16,7 @@ import Invoices from "@/Pages/Invoices/Invoices";
 import Treatments from "@/Pages/Treatments/Treatments";
 import Settings from "@/Pages/Settings/Settings";
 import Inventory from "@/Pages/Inventory/Inventory";
+import ClinicInfo from "@/Pages/ClinicInfo/ClinicInfo";
 import GuestRoute from "./GuestRoute";
 
 const router = createBrowserRouter([
@@ -43,10 +44,6 @@ const router = createBrowserRouter([
         element: <Profile />,
       },
       {
-        path: "/users",
-        element: <Users />,
-      },
-      {
         path: "/doctors",
         element: <Doctors />,
       },
@@ -63,7 +60,7 @@ const router = createBrowserRouter([
         element: <Patients />,
       },
       {
-        path: "Treatments",
+        path: "/treatments",
         element: <Treatments />,
       },
       {
@@ -85,6 +82,14 @@ const router = createBrowserRouter([
       {
         path: "/settings",
         element: <Settings />,
+      },
+      {
+        path: "/settings/clinic-info",
+        element: <ClinicInfo />,
+      },
+      {
+        path: "/settings/users",
+        element: <Users />,
       },
     ],
   },

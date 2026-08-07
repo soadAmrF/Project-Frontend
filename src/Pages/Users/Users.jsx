@@ -103,7 +103,6 @@ const Users = () => {
 
   const { searchQuery } = useOutletContext();
 
-// console.log(searchQuery);
 
   return (
     <div className="container-fluid users-page">

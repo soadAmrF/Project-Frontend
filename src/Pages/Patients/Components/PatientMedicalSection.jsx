@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { getMedicalRecords, getLabOrders } from "@/services/api";
+import { getMedicalRecords } from "@/services/api";
 
 export default function PatientMedicalSection({ patients, onDeletePatient }) {
   const [activeTab, setActiveTab] = useState("records");
   const [records, setRecords] = useState([]);
-  const [labOrders, setLabOrders] = useState([]);
 
   useEffect(() => {
     if (activeTab === "records") {
       fetchRecords();
-    } else if (activeTab === "labs") {
-      fetchLabOrders();
     }
   }, [activeTab]);
 
@@ -21,19 +18,7 @@ export default function PatientMedicalSection({ patients, onDeletePatient }) {
         setRecords(res.data.data);
       }
     } catch (err) {
-      console.log("Error fetching medical records");
-    }
-  };
-
-  // 1. جلب طلبات التحاليل الحقيقية من الموديل
-  const fetchLabOrders = async () => {
-    try {
-      const res = await getLabOrders();
-      if (res?.data?.data) {
-        setLabOrders(res.data.data);
-      }
-    } catch (err) {
-      console.log("Error fetching lab orders, fallback to static structure");
+      console.log("Error fetching records");
     }
   };
 
@@ -61,7 +46,6 @@ export default function PatientMedicalSection({ patients, onDeletePatient }) {
       </div>
 
       <div className="table-responsive">
-        {/* ===================== TAB 1: MEDICAL RECORDS ===================== */}
         {activeTab === "records" && (
           <table className="custom-table">
             <thead>
@@ -142,7 +126,6 @@ export default function PatientMedicalSection({ patients, onDeletePatient }) {
           </table>
         )}
 
-        {/* ===================== TAB 2: LAB TESTS ===================== */}
         {activeTab === "labs" && (
           <table className="custom-table">
             <thead>
@@ -157,78 +140,37 @@ export default function PatientMedicalSection({ patients, onDeletePatient }) {
               </tr>
             </thead>
             <tbody>
-              {labOrders.length > 0
-                ? labOrders.flatMap((order, orderIdx) =>
-                    order.tests.map((test, testIdx) => (
-                      <tr key={test._id || `${orderIdx}-${testIdx}`}>
-                        <td>
-                          {orderIdx + 1}.{testIdx + 1}
-                        </td>
-                        <td>
-                          <strong>{order.patientId?.fullName || "N/A"}</strong>
-                        </td>
-                        <td>{test.testName}</td>
-                        <td>
-                          {test.result?.value
-                            ? `${test.result.value} ${test.result.unit || ""}`
-                            : "Pending"}
-                        </td>
-                        <td>
-                          {new Date(order.createdAt).toLocaleDateString()}
-                        </td>
-                        <td>
-                          <span className={`status-pill ${test.status}`}>
-                            {test.status}
-                          </span>
-                        </td>
-                        <td>
-                          <div className="action-buttons">
-                            <button className="btn-action edit">
-                              <i className="bi bi-pencil"></i>
-                            </button>
-                            <button
-                              className="btn-action delete"
-                              onClick={() => onDeletePatient(order._id)}
-                            >
-                              <i className="bi bi-trash"></i>
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    )),
-                  )
-                : patients.map((p, index) => (
-                    <tr key={p._id || index}>
-                      <td>{index + 1}</td>
-                      <td>
-                        <strong>{p.fullName}</strong>
-                      </td>
-                      <td>Complete Blood Count (CBC)</td>
-                      <td>Normal</td>
-                      <td>2026-08-01</td>
-                      <td>
-                        <span className="status-pill completed">Completed</span>
-                      </td>
-                      <td>
-                        <div className="action-buttons">
-                          <button className="btn-action edit">
-                            <i className="bi bi-pencil"></i>
-                          </button>
-                          <button
-                            className="btn-action delete"
-                            onClick={() => onDeletePatient(p._id)}
-                          >
-                            <i className="bi bi-trash"></i>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+              {patients.map((p, index) => (
+                <tr key={p._id || index}>
+                  <td>{index + 1}</td>
+                  <td>
+                    <strong>{p.fullName}</strong>
+                  </td>
+                  <td>Complete Blood Count (CBC)</td>
+                  <td>Normal</td>
+                  <td>2026-08-01</td>
+                  <td>
+                    <span className="status-pill completed">Completed</span>
+                  </td>
+                  <td>
+                    <div className="action-buttons">
+                      <button className="btn-action edit">
+                        <i className="bi bi-pencil"></i>
+                      </button>
+                      <button
+                        className="btn-action delete"
+                        onClick={() => onDeletePatient(p._id)}
+                      >
+                        <i className="bi bi-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         )}
 
-        {/* ===================== TAB 3: RADIOLOGY ===================== */}
         {activeTab === "radiology" && (
           <table className="custom-table">
             <thead>
