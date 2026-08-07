@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "@/services/axios";
 import { jwtDecode } from "jwt-decode";
-import "@/Pages/Auth/Login//login.css";
+import "@/Pages/Auth/Login/login.css";
 import byImage from "@/assets/image/clinic.jpg";
 import logoImg from "@/assets/image/teeth.png";
 

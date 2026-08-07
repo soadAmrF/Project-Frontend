@@ -1,0 +1,23 @@
+.clinic-info-page .card {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.clinic-info-page .card-header {
+  font-weight: 600;
+}
+
+.clinic-info-page .card-header i {
+  font-size: 1.2rem;
+}
+
+.clinic-info-page .form-label {
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.clinic-info-page img {
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+}

@@ -1,0 +1,26 @@
+.inventory-page .stat-card {
+  border-radius: 14px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
+}
+
+.inventory-page .stat-card:hover {
+  transform: translateY(-3px);
+}
+
+.inventory-page .table td,
+.inventory-page .table th {
+  white-space: nowrap;
+}
+
+.inventory-page .modal {
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.inventory-page .nav-tabs .nav-link {
+  font-weight: 600;
+}
+
+.inventory-page .nav-tabs .nav-link.active {
+  color: #0d6efd;
+}
