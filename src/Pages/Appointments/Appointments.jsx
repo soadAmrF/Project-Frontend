@@ -5,10 +5,19 @@ import {
   getDoctors,
   createAppointment,
   updateAppointment,
+  deleteAppointment,
 } from "../../services/api";
 
 import "./Appointments.css";
 import PageHeader from "@/components/PageHeader";
+
+const initialFormData = {
+  patientId: "",
+  doctorId: "",
+  dateAndTime: "",
+  reason: "",
+  status: "scheduled",
+};
 
 export default function Appointments() {
   const [appointments, setAppointments] = useState([]);
@@ -17,59 +26,66 @@ export default function Appointments() {
 
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
-
-  const [formData, setFormData] = useState({
-    patientId: "",
-    doctorId: "",
-    dateAndTime: "",
-    reason: "",
-    status: "scheduled",
-  });
+  const [formData, setFormData] = useState(initialFormData);
 
   useEffect(() => {
-    fetchAppointments();
-    fetchPatients();
-    fetchDoctors();
+    fetchAllData();
   }, []);
 
-  const fetchAppointments = async () => {
+  // ✅ جيب كل البيانات مع بعض عشان أسرع
+  const fetchAllData = async () => {
+    setIsLoading(true);
     try {
-      const res = await getAppointments();
-      setAppointments(res.data.data);
-    } catch (err) {
-      console.log(err);
-    }
-  };
+      const [apptRes, patRes, docRes] = await Promise.allSettled([
+        getAppointments(),
+        getPatients(),
+        getDoctors(),
+      ]);
 
-  const fetchPatients = async () => {
-    try {
-      const res = await getPatients();
-      setPatients(res.data.data);
+      if (apptRes.status === "fulfilled") {
+        setAppointments(apptRes.value.data?.data || []);
+      }
+      if (patRes.status === "fulfilled") {
+        setPatients(patRes.value.data?.data || []);
+      }
+      if (docRes.status === "fulfilled") {
+        setDoctors(docRes.value.data?.data || []);
+      }
     } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const fetchDoctors = async () => {
-    try {
-      const res = await getDoctors();
-      setDoctors(res.data.data);
-    } catch (err) {
-      console.log(err);
+      console.error("Error fetching data:", err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [e.target.name]: e.target.value,
-    });
+    }));
+  };
+
+  // ✅ Validation قبل الحفظ
+  const validateForm = () => {
+    if (!formData.patientId) return "اختار المريض";
+    if (!formData.doctorId) return "اختار الطبيب";
+    if (!formData.dateAndTime) return "حدد التاريخ والوقت";
+    return null;
   };
 
   const handleSubmit = async () => {
+    const validationError = validateForm();
+    if (validationError) {
+      alert(validationError);
+      return;
+    }
+
+    setIsSubmitting(true);
     try {
       const data = {
         ...formData,
@@ -82,35 +98,54 @@ export default function Appointments() {
         await createAppointment(data);
       }
 
-      await fetchAppointments();
-
-      setShowModal(false);
-      setEditingId(null);
-
-      setFormData({
-        patientId: "",
-        doctorId: "",
-        dateAndTime: "",
-        reason: "",
-        status: "scheduled",
-      });
+      await fetchAllData();
+      closeModal();
     } catch (err) {
-      console.log(err);
+      console.error(err);
       alert(err.response?.data?.message || "Something went wrong");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
+  // ✅ استخدام _id بدل id
   const handleEdit = (appointment) => {
-    setEditingId(appointment.id);
+    setEditingId(appointment._id);
 
     setFormData({
-      patientId: appointment.patientId,
-      doctorId: appointment.doctorId,
-      dateAndTime: new Date(appointment.dateAndTime).toISOString().slice(0, 16),
+      patientId: appointment.patientId?._id || appointment.patientId || "",
+      doctorId: appointment.doctorId?._id || appointment.doctorId || "",
+      dateAndTime: appointment.dateAndTime
+        ? new Date(appointment.dateAndTime).toISOString().slice(0, 16)
+        : "",
       reason: appointment.reason || "",
-      status: appointment.status,
+      status: appointment.status || "scheduled",
     });
 
+    setShowModal(true);
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("هل أنت متأكد من حذف هذا الموعد؟")) return;
+
+    try {
+      await deleteAppointment(id);
+      await fetchAllData();
+    } catch (err) {
+      console.error(err);
+      alert("فشل في حذف الموعد");
+    }
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setEditingId(null);
+    setFormData(initialFormData);
+  };
+
+  const openNewModal = () => {
+    setEditingId(null);
+    setFormData(initialFormData);
     setShowModal(true);
   };
 
@@ -124,18 +159,51 @@ export default function Appointments() {
     return matchesSearch && matchesStatus;
   });
 
+  // ✅ إحصائيات محسوبة مرة واحدة
+  const stats = {
+    total: appointments.length,
+    scheduled: appointments.filter((a) => a.status === "scheduled").length,
+    completed: appointments.filter((a) => a.status === "completed").length,
+    cancelled: appointments.filter((a) => a.status === "cancelled").length,
+  };
+
+  // ✅ Loading State
+  if (isLoading) {
+    return (
+      <div className="appointments-page">
+        <PageHeader />
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: "50vh",
+            flexDirection: "column",
+            gap: "1rem",
+          }}
+        >
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+          <p style={{ color: "#666" }}>جاري تحميل البيانات...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="appointments-page">
       <PageHeader />
+
+      {/* Stats Grid */}
       <div className="stats-grid">
         <div className="stat-card blue">
           <div className="stat-icon">
             <i className="bi bi-calendar-event-fill"></i>
           </div>
-
           <div className="stat-info">
             <span>Total Appointments</span>
-            <h3>{appointments.length}</h3>
+            <h3>{stats.total}</h3>
           </div>
         </div>
 
@@ -143,12 +211,9 @@ export default function Appointments() {
           <div className="stat-icon">
             <i className="bi bi-check-circle-fill"></i>
           </div>
-
           <div className="stat-info">
             <span>Scheduled</span>
-            <h3>
-              {appointments.filter((a) => a.status === "scheduled").length}
-            </h3>
+            <h3>{stats.scheduled}</h3>
           </div>
         </div>
 
@@ -156,12 +221,9 @@ export default function Appointments() {
           <div className="stat-icon">
             <i className="bi bi-clock-fill"></i>
           </div>
-
           <div className="stat-info">
             <span>Completed</span>
-            <h3>
-              {appointments.filter((a) => a.status === "completed").length}
-            </h3>
+            <h3>{stats.completed}</h3>
           </div>
         </div>
 
@@ -169,16 +231,14 @@ export default function Appointments() {
           <div className="stat-icon">
             <i className="bi bi-x-circle-fill"></i>
           </div>
-
           <div className="stat-info">
             <span>Cancelled</span>
-            <h3>
-              {appointments.filter((a) => a.status === "cancelled").length}
-            </h3>
+            <h3>{stats.cancelled}</h3>
           </div>
         </div>
       </div>
 
+      {/* Filters */}
       <div className="filter-card">
         <div className="filter-group">
           <input
@@ -212,25 +272,12 @@ export default function Appointments() {
           </button>
         </div>
 
-        <button
-          className="btn-add-new"
-          onClick={() => {
-            setEditingId(null);
-
-            setFormData({
-              patientId: "",
-              doctorId: "",
-              dateAndTime: "",
-              reason: "",
-              status: "scheduled",
-            });
-
-            setShowModal(true);
-          }}
-        >
+        <button className="btn-add-new" onClick={openNewModal}>
           + New Appointment
         </button>
       </div>
+
+      {/* Table */}
       <div className="table-card">
         <div className="table-responsive">
           <table className="custom-table">
@@ -250,7 +297,7 @@ export default function Appointments() {
             <tbody>
               {filteredAppointments.length > 0 ? (
                 filteredAppointments.map((appointment, index) => (
-                  <tr key={appointment.id}>
+                  <tr key={appointment._id}>
                     <td>{index + 1}</td>
 
                     <td>
@@ -258,20 +305,21 @@ export default function Appointments() {
                         <div className="avatar-icon">
                           <i className="bi bi-person-fill"></i>
                         </div>
-
                         <div className="user-details">
-                          <strong>{appointment.patientName}</strong>
+                          <strong>
+                            {appointment.patientName || "Unknown"}
+                          </strong>
                         </div>
                       </div>
                     </td>
 
                     <td>
                       <div className="doctor-cell">
-                        <strong>{appointment.doctorName}</strong>
+                        <strong>{appointment.doctorName || "Unknown"}</strong>
                       </div>
                     </td>
 
-                    <td>{appointment.phone}</td>
+                    <td>{appointment.phone || "-"}</td>
 
                     <td>
                       <div className="date-cell">
@@ -280,46 +328,55 @@ export default function Appointments() {
                             appointment.dateAndTime,
                           ).toLocaleDateString()}
                         </strong>
-
                         <small>
                           {new Date(appointment.dateAndTime).toLocaleTimeString(
                             [],
-                            {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            },
+                            { hour: "2-digit", minute: "2-digit" },
                           )}
                         </small>
                       </div>
                     </td>
 
-                    <td>
-  {appointment.reason || "-"}
-</td>
+                    <td>{appointment.reason || "-"}</td>
 
+                    {/* ✅ Status Badge Logic - كل حالة ليها كلاس مختلف */}
                     <td>
                       <span
                         className={`status-badge ${
                           appointment.status === "scheduled"
-                            ? "confirmed"
+                            ? "scheduled"
                             : appointment.status === "completed"
-                              ? "confirmed"
+                              ? "completed"
                               : appointment.status === "cancelled"
                                 ? "cancelled"
-                                : "pending"
+                                : appointment.status === "missed"
+                                  ? "missed"
+                                  : "pending"
                         }`}
                       >
                         {appointment.status}
                       </span>
                     </td>
 
+                    {/* ✅ أزرار Edit + Delete */}
                     <td>
-                      <button
-                        className="btn-action"
-                        onClick={() => handleEdit(appointment)}
-                      >
-                        <i className="bi bi-pencil-fill"></i>
-                      </button>
+                      <div style={{ display: "flex", gap: "8px" }}>
+                        <button
+                          className="btn-action"
+                          onClick={() => handleEdit(appointment)}
+                          title="Edit"
+                        >
+                          <i className="bi bi-pencil-fill"></i>
+                        </button>
+                        <button
+                          className="btn-action"
+                          onClick={() => handleDelete(appointment._id)}
+                          title="Delete"
+                          style={{ color: "#dc3545" }}
+                        >
+                          <i className="bi bi-trash-fill"></i>
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -335,21 +392,17 @@ export default function Appointments() {
         </div>
       </div>
 
+      {/* Modal */}
       {showModal && (
         <div className="modal-overlay">
           <div className="modal-content">
             <div className="d-flex justify-content-between align-items-center mb-3">
               <h3>{editingId ? "Edit Appointment" : "Add Appointment"}</h3>
-
-              <button
-                className="btn-close"
-                onClick={() => setShowModal(false)}
-              ></button>
+              <button className="btn-close" onClick={closeModal}></button>
             </div>
 
             <div className="form-group">
-              <label>Patient</label>
-
+              <label>Patient *</label>
               <select
                 className="input-field"
                 name="patientId"
@@ -357,18 +410,16 @@ export default function Appointments() {
                 onChange={handleChange}
               >
                 <option value="">Select Patient</option>
-
                 {patients.map((patient) => (
                   <option key={patient._id} value={patient._id}>
-                    {patient.fullName}
+                    {patient.fullName || patient.name || "Unknown"}
                   </option>
                 ))}
               </select>
             </div>
 
             <div className="form-group">
-              <label>Doctor</label>
-
+              <label>Doctor *</label>
               <select
                 className="input-field"
                 name="doctorId"
@@ -376,18 +427,19 @@ export default function Appointments() {
                 onChange={handleChange}
               >
                 <option value="">Select Doctor</option>
-
                 {doctors.map((doctor) => (
-                  <option key={doctor._id} value={doctor._id}>
-                    {doctor.userId.fullname}
+                  <option
+                    key={doctor._id || doctor.id}
+                    value={doctor._id || doctor.id}
+                  >
+                    {doctor.userId?.name || doctor.name || "Unknown"}
                   </option>
                 ))}
               </select>
             </div>
 
             <div className="form-group">
-              <label>Date & Time</label>
-
+              <label>Date & Time *</label>
               <input
                 type="datetime-local"
                 className="input-field"
@@ -399,7 +451,6 @@ export default function Appointments() {
 
             <div className="form-group">
               <label>Reason</label>
-
               <textarea
                 rows="3"
                 className="input-field"
@@ -411,7 +462,6 @@ export default function Appointments() {
 
             <div className="form-group">
               <label>Status</label>
-
               <select
                 className="input-field"
                 name="status"
@@ -426,12 +476,21 @@ export default function Appointments() {
             </div>
 
             <div className="modal-actions">
-              <button className="btn-reset" onClick={() => setShowModal(false)}>
+              <button
+                className="btn-reset"
+                onClick={closeModal}
+                disabled={isSubmitting}
+              >
                 Cancel
               </button>
 
-              <button className="btn-add-new" onClick={handleSubmit}>
-                {editingId ? "Update" : "Save"}
+              {/* ✅ Disabled أثناء الحفظ */}
+              <button
+                className="btn-add-new"
+                onClick={handleSubmit}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Saving..." : editingId ? "Update" : "Save"}
               </button>
             </div>
           </div>
