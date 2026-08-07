@@ -52,6 +52,17 @@ export const updatePatient = (id, patientData) =>
 export const deletePatient = (id) => api.delete(`/patient/${id}`);
 
 // ////////////////// Medical Records (مفرد زي الراوتر) //////////////////
+// 🆕 الدوال الجديدة لصفحة Medical Records
+export const getAllMedicalRecords = (params) =>
+  api.get(`/medicalrecord${buildQueryString(params)}`);
+
+export const getPatientMedicalRecords = (patientId) =>
+  api.get(`/medicalrecord/patient/${patientId}`);
+
+export const updateMedicalRecordNotes = (id, data) =>
+  api.patch(`/medicalrecord/${id}/notes`, data);
+
+// ✅ الدوال القديمة (محافظين عليها عشان الكود الحالي ميكنسرش)
 export const createMedicalRecord = (recordData) =>
   api.post("/medicalrecord", recordData);
 export const getMedicalRecords = () => api.get("/medicalrecord");
@@ -108,7 +119,8 @@ export const createClinicInfo = (body) => api.post("/clinic-info", body);
 export const updateClinicInfo = (body) => api.put("/clinic-info", body);
 
 // ////////////////// Treatments //////////////////
-export const getTreatments = () => api.get("/treatments");
+export const getTreatments = (params) =>
+  api.get(`/treatments${buildQueryString(params)}`);
 export const getTreatmentById = (id) => api.get(`/treatments/${id}`);
 export const createTreatment = (data) => api.post("/treatments", data);
 export const updateTreatment = (id, data) => api.put(`/treatments/${id}`, data);
@@ -120,5 +132,5 @@ export const register = (data) => api.post("/auth/register", data);
 export const logout = () => api.post("/auth/logout");
 export const getCurrentUser = () => api.get("/auth/me");
 
-// ////////////////// Aliases (لتجنب أخطاء الاستيراد في الملفات القديمة) //////////////////
+// ////////////////// Aliases (للتوافق مع الملفات القديمة) //////////////////
 export { getAllLabOrders as getLabOrders };

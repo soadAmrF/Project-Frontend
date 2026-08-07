@@ -50,6 +50,12 @@ export default function Sidebar({ openSidebar, setOpenSidebar }) {
       path: "/treatments",
     },
     {
+      title: "MedicalRecords",
+      icon: "bi-journal-medical",
+      path: "/MedicalRecords",
+    },
+
+    {
       title: "Invoices",
       icon: "bi-receipt",
       path: "/invoices",
@@ -69,23 +75,23 @@ export default function Sidebar({ openSidebar, setOpenSidebar }) {
       icon: "bi-eyedropper",
       path: "/laboratory",
     },
-    
+
     {
       title: "Settings",
-  icon: "bi-gear",
-  path: "/settings",
-  submenu: [
-    {
-      title: "Clinic Info",
-      icon: "bi-building",
-      path: "/settings/clinic-info",  
-    },
-    {
-      title: "Users",
-      icon: "bi-person-gear",
-      path: "/settings/users",
-          }
-       ],
+      icon: "bi-gear",
+      path: "/settings",
+      submenu: [
+        {
+          title: "Clinic Info",
+          icon: "bi-building",
+          path: "/settings/clinic-info",
+        },
+        {
+          title: "Users",
+          icon: "bi-person-gear",
+          path: "/settings/users",
+        },
+      ],
     },
   ];
 

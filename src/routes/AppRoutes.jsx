@@ -14,6 +14,7 @@ import Laboratory from "@/Pages/Laboratory/Laboratory";
 import Reports from "@/Pages/Reports/Reports";
 import Invoices from "@/Pages/Invoices/Invoices";
 import Treatments from "@/Pages/Treatments/Treatments";
+import MedicalRecords from "@/Pages/MedicalRecords/MedicalRecords";
 import Settings from "@/Pages/Settings/Settings";
 import Inventory from "@/Pages/Inventory/Inventory";
 import ClinicInfo from "@/Pages/ClinicInfo/ClinicInfo";
@@ -62,6 +63,10 @@ const router = createBrowserRouter([
       {
         path: "/treatments",
         element: <Treatments />,
+      },
+      {
+        path: "/MedicalRecords",
+        element: <MedicalRecords />,
       },
       {
         path: "/invoices",
