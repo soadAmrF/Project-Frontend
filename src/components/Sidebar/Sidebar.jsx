@@ -8,10 +8,8 @@ export default function Sidebar({ openSidebar, setOpenSidebar }) {
   const user = token ? jwtDecode(token) : null;
   const location = useLocation();
 
-  
   const [settingsOpen, setSettingsOpen] = useState(false);
 
-  
   useEffect(() => {
     if (location.pathname.startsWith("/settings")) {
       setSettingsOpen(true);
@@ -43,11 +41,6 @@ export default function Sidebar({ openSidebar, setOpenSidebar }) {
       title: "Doctors",
       icon: "bi-person-badge",
       path: "/doctors",
-    },
-    {
-      title: "Treatments",
-      icon: "bi-heart-pulse",
-      path: "/treatments",
     },
     {
       title: "MedicalRecords",
@@ -126,7 +119,6 @@ export default function Sidebar({ openSidebar, setOpenSidebar }) {
 
         <div className="sidebar-menu">
           {menu.map((item) => {
-            
             if (item.submenu) {
               const isSubmenuActive = location.pathname.startsWith(item.path);
 
@@ -167,7 +159,6 @@ export default function Sidebar({ openSidebar, setOpenSidebar }) {
               );
             }
 
-            
             return (
               <NavLink
                 key={item.path}

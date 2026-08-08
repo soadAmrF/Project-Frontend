@@ -16,13 +16,13 @@ export default function Patients() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const [activeTab, setActiveTab] = useState("records");
   const [search, setSearch] = useState("");
   const [genderFilter, setGenderFilter] = useState("");
 
   const [showModal, setShowModal] = useState(false);
   const [editingPatient, setEditingPatient] = useState(null);
 
-  // ==================== Fetch Data ====================
   const fetchPatientsData = async () => {
     setIsLoading(true);
     try {
@@ -31,7 +31,6 @@ export default function Patients() {
       setPatients(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error("Error fetching patients:", err);
-      alert(err.response?.data?.message || "فشل في تحميل بيانات المرضى");
     } finally {
       setIsLoading(false);
     }
@@ -41,32 +40,28 @@ export default function Patients() {
     fetchPatientsData();
   }, []);
 
-  // ==================== Add / Update ====================
   const handleSavePatient = async (formData) => {
     setIsSubmitting(true);
     try {
       if (editingPatient) {
-        // ✅ تحديث مريض موجود
         const patientId = editingPatient._id || editingPatient.id;
         await updatePatient(patientId, formData);
       } else {
-        // ✅ إضافة مريض جديد
-        await addPatient(formData);
+        await addPatient({
+          ...formData,
+          category: formData.category || activeTab,
+        });
       }
 
-      // إعادة تحميل البيانات من السيرفر
       await fetchPatientsData();
       closeModal();
     } catch (err) {
       console.error("Error saving patient:", err);
-      alert(err.response?.data?.message || "فشل في حفظ بيانات المريض");
-      throw err; // عشان الـ Modal يعرف إن فيه خطأ
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // ==================== Delete ====================
   const handleDeletePatient = async (id) => {
     if (
       !window.confirm(
@@ -78,15 +73,12 @@ export default function Patients() {
 
     try {
       await deletePatient(id);
-      // إزالة من القائمة المحلية فوراً (تحسين UX)
       setPatients((prev) => prev.filter((p) => (p._id || p.id) !== id));
     } catch (err) {
       console.error("Error deleting patient:", err);
-      alert(err.response?.data?.message || "فشل في حذف المريض");
     }
   };
 
-  // ==================== Modal Handlers ====================
   const openAddModal = () => {
     setEditingPatient(null);
     setShowModal(true);
@@ -102,9 +94,13 @@ export default function Patients() {
     setEditingPatient(null);
   };
 
-  // ==================== Filtering ====================
   const filteredPatients = patients.filter((item) => {
-    const pName = (item.fullName || item.name || "").toLowerCase();
+    const pName = (
+      item.fullName ||
+      item.name ||
+      item.patientName ||
+      ""
+    ).toLowerCase();
     const pPhone = String(item.phone || "");
     const pEmail = (item.email || "").toLowerCase();
     const pId = String(item._id || item.id || "").toLowerCase();
@@ -121,31 +117,6 @@ export default function Patients() {
     return matchesSearch && matchesGender;
   });
 
-  // ==================== Loading State ====================
-  if (isLoading) {
-    return (
-      <div className="patients-page">
-        <PageHeader />
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            minHeight: "50vh",
-            flexDirection: "column",
-            gap: "1rem",
-          }}
-        >
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-          <p style={{ color: "#666" }}>جاري تحميل بيانات المرضى...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // ==================== Render ====================
   return (
     <div className="patients-page">
       <PageHeader />
@@ -191,7 +162,9 @@ export default function Patients() {
         patients={filteredPatients}
         onDeletePatient={handleDeletePatient}
         onEditPatient={openEditModal}
-        isLoading={isSubmitting}
+        isLoading={isLoading}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
       />
 
       {showModal && (
@@ -200,6 +173,7 @@ export default function Patients() {
           onClose={closeModal}
           onSave={handleSavePatient}
           isSubmitting={isSubmitting}
+          activeTab={activeTab}
         />
       )}
     </div>
