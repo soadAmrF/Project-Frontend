@@ -134,3 +134,27 @@ export const getCurrentUser = () => api.get("/auth/me");
 
 // ////////////////// Aliases (للتوافق مع الملفات القديمة) //////////////////
 export { getAllLabOrders as getLabOrders };
+
+// ////////////////// X-Rays //////////////////
+export const getAllXrays = () => api.get("/xray");
+
+export const getXrayById = (medicalRecordId, xrayId) =>
+  api.get(`/xray/${medicalRecordId}/${xrayId}`);
+
+export const createXray = (medicalRecordId, data) =>
+  api.post(`/xray/${medicalRecordId}`, data);
+
+export const updateXray = (medicalRecordId, xrayId, data) =>
+  api.put(`/xray/${medicalRecordId}/${xrayId}`, data);
+
+export const deleteXray = (medicalRecordId, xrayId) =>
+  api.delete(`/xray/${medicalRecordId}/${xrayId}`);
+
+// ////////////////// Invoices //////////////////
+
+export const getInvoices = (params) =>
+  api.get(`/invoices${buildQueryString(params)}`);
+export const getInvoiceById = (id) => api.get(`/invoices/${id}`);
+export const createInvoice = (data) => api.post("/invoices", data);
+export const updateInvoice = (id, data) => api.put(`/invoices/${id}`, data);
+export const deleteInvoice = (id) => api.delete(`/invoices/${id}`);
