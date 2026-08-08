@@ -1,4 +1,4 @@
-/* ==================== Base ==================== */
+
 .medical-records-page {
   padding: 20px;
   width: 100%;
@@ -17,7 +17,7 @@
   color: #666;
 }
 
-/* ==================== Stats ==================== */
+
 .stats-container {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -80,7 +80,7 @@
   color: #aaa;
 }
 
-/* ==================== Filters ==================== */
+
 .filter-card {
   display: flex;
   flex-wrap: wrap;
@@ -167,7 +167,7 @@
   background: #4346a0;
 }
 
-/* ==================== Table ==================== */
+
 .table-card {
   background: #fff;
   border-radius: 12px;
@@ -289,7 +289,7 @@
   color: #ccc;
 }
 
-/* ==================== Actions ==================== */
+
 .actions-cell {
   display: flex;
   gap: 6px;
@@ -329,7 +329,7 @@
   background: #ffebee;
 }
 
-/* ==================== Empty State ==================== */
+
 .empty-state {
   text-align: center;
   padding: 50px 20px !important;
@@ -340,7 +340,7 @@
   margin: 12px 0 20px;
 }
 
-/* ==================== Pagination ==================== */
+
 .pagination-bar {
   display: flex;
   flex-wrap: wrap;
@@ -387,7 +387,7 @@
   cursor: not-allowed;
 }
 
-/* ==================== Modals ==================== */
+
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -414,7 +414,7 @@
 }
 
 .modal-large {
-  max-width: 700px;
+  max-width: 800px;
 }
 
 @keyframes slideUp {
@@ -466,7 +466,7 @@
   content: "×";
 }
 
-/* ==================== Form ==================== */
+
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -575,7 +575,74 @@
   cursor: not-allowed;
 }
 
-/* ==================== Record Details (View Modal) ==================== */
+
+.section-box {
+  background: #f8f9fa;
+  border: 1px solid #e8ecf1;
+  padding: 18px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #e8ecf1;
+}
+
+.section-header h4 {
+  margin: 0;
+  font-size: 16px;
+  color: #333;
+  font-weight: 600;
+}
+
+.btn-add-section {
+  background: #5156be;
+  color: #fff;
+  padding: 6px 14px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-add-section:hover:not(:disabled) {
+  background: #4346a0;
+}
+
+.btn-add-section:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.empty-section {
+  color: #999;
+  font-size: 13px;
+  font-style: italic;
+  margin: 0;
+  text-align: center;
+  padding: 10px;
+}
+
+.dynamic-row {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr 1.5fr auto;
+  gap: 10px;
+  padding: 12px;
+  background: #fff;
+  border: 1px solid #e8ecf1;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  align-items: end;
+}
+
+
 .record-details {
   display: flex;
   flex-direction: column;
@@ -643,18 +710,97 @@
   line-height: 1.6;
 }
 
-.prescription-list {
+.prescription-list,
+.xray-list {
   margin: 0;
-  padding-left: 20px;
+  padding-left: 0;
+  list-style: none;
 }
 
-.prescription-list li {
+.prescription-list li,
+.xray-list li {
+  background: #fff;
+  padding: 12px 14px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  border: 1px solid #e8ecf1;
   font-size: 14px;
   color: #333;
+}
+
+.prescription-detail {
+  display: block;
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
+}
+
+.prescription-instructions {
+  display: block;
+  font-size: 12px;
+  color: #888;
+  font-style: italic;
+  margin-top: 4px;
+}
+
+.xray-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 6px;
 }
 
-/* ==================== Responsive ==================== */
+.xray-status {
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-pending {
+  background: #fff3e0;
+  color: #e65100;
+}
+
+.status-completed {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.status-cancelled {
+  background: #ffebee;
+  color: #c62828;
+}
+
+.xray-info {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.xray-notes {
+  display: block;
+  font-size: 12px;
+  color: #888;
+  font-style: italic;
+  margin-top: 6px;
+}
+
+.xray-image-link {
+  display: inline-block;
+  margin-top: 8px;
+  color: #5156be;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.xray-image-link:hover {
+  text-decoration: underline;
+}
+
+
 @media (max-width: 768px) {
   .medical-records-page {
     padding: 15px;
@@ -683,6 +829,15 @@
 
   .modal-card {
     padding: 20px;
+  }
+
+  .dynamic-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .dynamic-row .field {
+    margin-bottom: 8px;
   }
 }
 

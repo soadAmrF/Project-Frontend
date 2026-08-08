@@ -11,7 +11,7 @@ import {
   deleteMedicalRecord,
 } from "@/services/api";
 
-// ==================== Component: Stats Cards ====================
+
 function StatsCards({ records }) {
   const todayStr = new Date().toDateString();
   const todayRecords = records.filter(
@@ -75,7 +75,7 @@ function StatsCards({ records }) {
   );
 }
 
-// ==================== Component: Add/Edit Record Modal ====================
+
 function RecordModal({
   patients,
   doctors,
@@ -97,6 +97,7 @@ function RecordModal({
       ? new Date(editingRecord.nextVisit).toISOString().slice(0, 16)
       : "",
     prescription: editingRecord?.prescription || [],
+    xrays: editingRecord?.xrays || [],
   });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -133,14 +134,13 @@ function RecordModal({
     setIsSubmitting(true);
     try {
       if (editingRecord) {
-        // تحديث الملاحظات فقط
         await updateMedicalRecordNotes(editingRecord._id, {
           notes: formData.notes,
           treatmentPlan: formData.treatmentPlan,
           prescription: formData.prescription,
+          xrays: formData.xrays,
         });
       } else {
-        // إنشاء سجل جديد
         const data = {
           ...formData,
           nextVisit: formData.nextVisit
@@ -157,7 +157,55 @@ function RecordModal({
     }
   };
 
-  // فلترة المواعيد حسب المريض المختار
+  
+  const handleAddPrescription = () => {
+    setFormData((prev) => ({
+      ...prev,
+      prescription: [
+        ...prev.prescription,
+        { medicineName: "", dosage: "", duration: "", instructions: "" },
+      ],
+    }));
+  };
+
+  const handlePrescriptionChange = (index, field, value) => {
+    const updated = [...formData.prescription];
+    updated[index][field] = value;
+    setFormData((prev) => ({ ...prev, prescription: updated }));
+  };
+
+  const handleRemovePrescription = (index) => {
+    setFormData((prev) => ({
+      ...prev,
+      prescription: prev.prescription.filter((_, i) => i !== index),
+    }));
+  };
+
+  
+  const handleAddXray = () => {
+    setFormData((prev) => ({
+      ...prev,
+      xrays: [
+        ...prev.xrays,
+        { xrayType: "", status: "Pending", price: 0, notes: "" },
+      ],
+    }));
+  };
+
+  const handleXrayChange = (index, field, value) => {
+    const updated = [...formData.xrays];
+    updated[index][field] = value;
+    setFormData((prev) => ({ ...prev, xrays: updated }));
+  };
+
+  const handleRemoveXray = (index) => {
+    setFormData((prev) => ({
+      ...prev,
+      xrays: prev.xrays.filter((_, i) => i !== index),
+    }));
+  };
+
+  
   const filteredAppointments = formData.patientId
     ? appointments.filter(
         (a) => (a.patientId?._id || a.patientId) === formData.patientId,
@@ -312,6 +360,184 @@ function RecordModal({
             </div>
           </div>
 
+          {}
+          <div className="section-box">
+            <div className="section-header">
+              <h4>
+                <i className="bi bi-capsule me-2"></i> Prescription
+              </h4>
+              <button
+                type="button"
+                className="btn-add-section"
+                onClick={handleAddPrescription}
+                disabled={!!editingRecord}
+              >
+                + Add Medicine
+              </button>
+            </div>
+
+            {formData.prescription.length === 0 && (
+              <p className="empty-section">No medicines added yet</p>
+            )}
+
+            {formData.prescription.map((med, idx) => (
+              <div key={idx} className="dynamic-row">
+                <div className="field" style={{ marginBottom: 0 }}>
+                  <label>Medicine Name</label>
+                  <input
+                    type="text"
+                    value={med.medicineName}
+                    onChange={(e) =>
+                      handlePrescriptionChange(
+                        idx,
+                        "medicineName",
+                        e.target.value,
+                      )
+                    }
+                    disabled={!!editingRecord}
+                    placeholder="e.g., Panadol"
+                  />
+                </div>
+                <div className="field" style={{ marginBottom: 0 }}>
+                  <label>Dosage</label>
+                  <input
+                    type="text"
+                    value={med.dosage}
+                    onChange={(e) =>
+                      handlePrescriptionChange(idx, "dosage", e.target.value)
+                    }
+                    disabled={!!editingRecord}
+                    placeholder="e.g., 500mg"
+                  />
+                </div>
+                <div className="field" style={{ marginBottom: 0 }}>
+                  <label>Duration</label>
+                  <input
+                    type="text"
+                    value={med.duration}
+                    onChange={(e) =>
+                      handlePrescriptionChange(idx, "duration", e.target.value)
+                    }
+                    disabled={!!editingRecord}
+                    placeholder="e.g., 7 days"
+                  />
+                </div>
+                <div className="field" style={{ marginBottom: 0 }}>
+                  <label>Instructions</label>
+                  <input
+                    type="text"
+                    value={med.instructions}
+                    onChange={(e) =>
+                      handlePrescriptionChange(
+                        idx,
+                        "instructions",
+                        e.target.value,
+                      )
+                    }
+                    disabled={!!editingRecord}
+                    placeholder="e.g., After meals"
+                  />
+                </div>
+                {!editingRecord && (
+                  <button
+                    type="button"
+                    className="btn-action delete"
+                    onClick={() => handleRemovePrescription(idx)}
+                    title="Remove medicine"
+                  >
+                    <i className="bi bi-trash-fill"></i>
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {}
+          <div className="section-box">
+            <div className="section-header">
+              <h4>
+                <i className="bi bi-image me-2"></i> X-Rays
+              </h4>
+              <button
+                type="button"
+                className="btn-add-section"
+                onClick={handleAddXray}
+                disabled={!!editingRecord}
+              >
+                + Add X-Ray
+              </button>
+            </div>
+
+            {formData.xrays.length === 0 && (
+              <p className="empty-section">No X-rays added yet</p>
+            )}
+
+            {formData.xrays.map((xray, idx) => (
+              <div key={idx} className="dynamic-row">
+                <div className="field" style={{ marginBottom: 0 }}>
+                  <label>X-Ray Type</label>
+                  <input
+                    type="text"
+                    value={xray.xrayType}
+                    onChange={(e) =>
+                      handleXrayChange(idx, "xrayType", e.target.value)
+                    }
+                    disabled={!!editingRecord}
+                    placeholder="e.g., Chest X-Ray"
+                  />
+                </div>
+                <div className="field" style={{ marginBottom: 0 }}>
+                  <label>Price</label>
+                  <input
+                    type="number"
+                    value={xray.price}
+                    onChange={(e) =>
+                      handleXrayChange(idx, "price", Number(e.target.value))
+                    }
+                    disabled={!!editingRecord}
+                    placeholder="0"
+                  />
+                </div>
+                <div className="field" style={{ marginBottom: 0 }}>
+                  <label>Status</label>
+                  <select
+                    value={xray.status}
+                    onChange={(e) =>
+                      handleXrayChange(idx, "status", e.target.value)
+                    }
+                    disabled={!!editingRecord}
+                  >
+                    <option value="Pending">Pending</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Cancelled">Cancelled</option>
+                  </select>
+                </div>
+                <div className="field" style={{ marginBottom: 0 }}>
+                  <label>Notes</label>
+                  <input
+                    type="text"
+                    value={xray.notes}
+                    onChange={(e) =>
+                      handleXrayChange(idx, "notes", e.target.value)
+                    }
+                    disabled={!!editingRecord}
+                    placeholder="Optional notes..."
+                  />
+                </div>
+                {!editingRecord && (
+                  <button
+                    type="button"
+                    className="btn-action delete"
+                    onClick={() => handleRemoveXray(idx)}
+                    title="Remove X-ray"
+                  >
+                    <i className="bi bi-trash-fill"></i>
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+
           <div className="modal-btns">
             <button
               type="button"
@@ -335,7 +561,7 @@ function RecordModal({
   );
 }
 
-// ==================== Component: View Record Modal ====================
+
 function ViewRecordModal({ record, onClose }) {
   if (!record) return null;
 
@@ -354,7 +580,7 @@ function ViewRecordModal({ record, onClose }) {
         </div>
 
         <div className="record-details">
-          {/* Patient & Doctor Info */}
+          {}
           <div className="details-section">
             <h3>
               <i className="bi bi-people-fill me-2"></i>
@@ -388,7 +614,7 @@ function ViewRecordModal({ record, onClose }) {
             </div>
           </div>
 
-          {/* Medical Info */}
+          {}
           <div className="details-section">
             <h3>
               <i className="bi bi-heart-pulse-fill me-2"></i>
@@ -416,26 +642,72 @@ function ViewRecordModal({ record, onClose }) {
             )}
           </div>
 
-          {/* Prescription */}
+          {}
           {record.prescription && record.prescription.length > 0 && (
             <div className="details-section">
               <h3>
                 <i className="bi bi-capsule me-2"></i>
-                Prescription
+                Prescription ({record.prescription.length} medicines)
               </h3>
               <ul className="prescription-list">
                 {record.prescription.map((item, idx) => (
                   <li key={idx}>
-                    {typeof item === "string"
-                      ? item
-                      : `${item.name} - ${item.dosage}`}
+                    <strong>{item.medicineName}</strong>
+                    <span className="prescription-detail">
+                      {item.dosage} • {item.duration}
+                    </span>
+                    {item.instructions && (
+                      <small className="prescription-instructions">
+                        📝 {item.instructions}
+                      </small>
+                    )}
                   </li>
                 ))}
               </ul>
             </div>
           )}
 
-          {/* Dates */}
+          {}
+          {record.xrays && record.xrays.length > 0 && (
+            <div className="details-section">
+              <h3>
+                <i className="bi bi-image me-2"></i>
+                X-Rays ({record.xrays.length})
+              </h3>
+              <ul className="xray-list">
+                {record.xrays.map((xray, idx) => (
+                  <li key={idx}>
+                    <div className="xray-header">
+                      <strong>{xray.xrayType}</strong>
+                      <span
+                        className={`xray-status status-${xray.status?.toLowerCase()}`}
+                      >
+                        {xray.status}
+                      </span>
+                    </div>
+                    <div className="xray-info">
+                      <span>💰 Price: {xray.price || 0}</span>
+                    </div>
+                    {xray.notes && (
+                      <small className="xray-notes">📝 {xray.notes}</small>
+                    )}
+                    {xray.image && (
+                      <a
+                        href={xray.image}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="xray-image-link"
+                      >
+                        📷 View Image
+                      </a>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {}
           <div className="details-section">
             <h3>
               <i className="bi bi-calendar-fill me-2"></i>
@@ -466,31 +738,31 @@ function ViewRecordModal({ record, onClose }) {
   );
 }
 
-// ==================== Main Component: MedicalRecords ====================
+
 export default function MedicalRecords() {
-  // Data States
+  
   const [records, setRecords] = useState([]);
   const [patients, setPatients] = useState([]);
   const [doctors, setDoctors] = useState([]);
   const [appointments, setAppointments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Filter States
+  
   const [search, setSearch] = useState("");
   const [doctorFilter, setDoctorFilter] = useState("");
   const [dateFilter, setDateFilter] = useState("");
 
-  // Modal States
+  
   const [showModal, setShowModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [editingRecord, setEditingRecord] = useState(null);
   const [viewingRecord, setViewingRecord] = useState(null);
 
-  // Pagination
+  
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPerPage = 10;
 
-  // ==================== Fetch Data ====================
+  
   const fetchAllData = useCallback(async () => {
     setIsLoading(true);
     try {
@@ -525,7 +797,7 @@ export default function MedicalRecords() {
     fetchAllData();
   }, [fetchAllData]);
 
-  // ==================== Handlers ====================
+  
   const handleAddNew = () => {
     setEditingRecord(null);
     setShowModal(true);
@@ -558,9 +830,8 @@ export default function MedicalRecords() {
     await fetchAllData();
   };
 
-  // ==================== Filtering ====================
+  
   const filteredRecords = records.filter((record) => {
-    // البحث بالاسم
     const patientName = (
       record.patientId?.fullName ||
       record.patientId?.name ||
@@ -578,12 +849,10 @@ export default function MedicalRecords() {
       doctorName.includes(search.toLowerCase()) ||
       diagnosis.includes(search.toLowerCase());
 
-    // الفلترة حسب الطبيب
     const matchesDoctor =
       doctorFilter === "" ||
       (record.doctorId?._id || record.doctorId) === doctorFilter;
 
-    // الفلترة حسب التاريخ
     const matchesDate =
       dateFilter === "" ||
       new Date(record.createdAt).toISOString().split("T")[0] === dateFilter;
@@ -591,14 +860,14 @@ export default function MedicalRecords() {
     return matchesSearch && matchesDoctor && matchesDate;
   });
 
-  // Pagination
+  
   const totalPages = Math.ceil(filteredRecords.length / recordsPerPage) || 1;
   const displayedRecords = filteredRecords.slice(
     (currentPage - 1) * recordsPerPage,
     currentPage * recordsPerPage,
   );
 
-  // ==================== Loading ====================
+  
   if (isLoading) {
     return (
       <div className="medical-records-page">
@@ -611,15 +880,13 @@ export default function MedicalRecords() {
     );
   }
 
-  // ==================== Render ====================
+  
   return (
     <div className="medical-records-page">
       <PageHeader />
 
-      {/* Stats */}
       <StatsCards records={records} />
 
-      {/* Filters */}
       <div className="filter-card">
         <div className="filter-group">
           <div className="search-wrapper">
@@ -682,7 +949,6 @@ export default function MedicalRecords() {
         </button>
       </div>
 
-      {/* Table */}
       <div className="table-card">
         <div className="table-responsive">
           <table className="custom-table">
@@ -811,7 +1077,6 @@ export default function MedicalRecords() {
           </table>
         </div>
 
-        {/* Pagination */}
         {totalPages > 1 && (
           <div className="pagination-bar">
             <span className="pagination-info">
@@ -845,7 +1110,6 @@ export default function MedicalRecords() {
         )}
       </div>
 
-      {/* Add/Edit Modal */}
       {showModal && (
         <RecordModal
           patients={patients}
@@ -860,7 +1124,6 @@ export default function MedicalRecords() {
         />
       )}
 
-      {/* View Modal */}
       {showViewModal && viewingRecord && (
         <ViewRecordModal
           record={viewingRecord}
