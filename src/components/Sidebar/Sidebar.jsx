@@ -38,11 +38,6 @@ export default function Sidebar({ openSidebar, setOpenSidebar }) {
       path: "/patients",
     },
     {
-      title: "Doctors",
-      icon: "bi-person-badge",
-      path: "/doctors",
-    },
-    {
       title: "MedicalRecords",
       icon: "bi-journal-medical",
       path: "/MedicalRecords",
@@ -83,6 +78,11 @@ export default function Sidebar({ openSidebar, setOpenSidebar }) {
           title: "Users",
           icon: "bi-person-gear",
           path: "/settings/users",
+        },
+        {
+          title: "Doctors",
+          icon: "bi-person-gear",
+          path: "/settings/doctors",
         },
       ],
     },

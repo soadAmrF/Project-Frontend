@@ -158,3 +158,12 @@ export const getInvoiceById = (id) => api.get(`/invoices/${id}`);
 export const createInvoice = (data) => api.post("/invoices", data);
 export const updateInvoice = (id, data) => api.put(`/invoices/${id}`, data);
 export const deleteInvoice = (id) => api.delete(`/invoices/${id}`);
+
+// Reports APIs
+export const appointmentReport = (date) => api.get(`/reports/appointments?date=${date}`);
+export const dailyIncomeReport = (date) => api.get(`/reports/daily-income?date=${date}`);
+export const dailyPatientsReport = (date) => api.get(`/reports/daily-patients?date=${date}`);
+export const doctorsReport = () => api.get(`/reports/doctors`);
+export const monthlyIncomeReport = () => api.get(`/reports/monthly-income`);
+export const monthlyPatientsReport = () => api.get(`/reports/monthly-patients`);
+export const yearlyIncomeReport = () => api.get(`/reports/yearly-income`);
