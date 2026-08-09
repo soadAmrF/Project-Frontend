@@ -4,7 +4,7 @@ import NewInvoiceDrawer from "./Components/NewInvoiceDrawer";
 import "./Invoices.css";
 import PageHeader from "@/components/PageHeader";
 
-const API_URL = "http://localhost:7000/api/v1/invoice";
+const API_URL = "https://project-backend-ruddy-theta.vercel.app/api/v1/invoice";
 
 export default function Invoices() {
   const [isModalOpen, setIsModalOpen] = useState(false);

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
-const PATIENTS_URL = "http://localhost:7000/api/v1/patient";
-const DOCTORS_URL = "http://localhost:7000/api/v1/doctors";
+const PATIENTS_URL = "https://project-backend-ruddy-theta.vercel.app/api/v1/patient";
+const DOCTORS_URL = "https://project-backend-ruddy-theta.vercel.app/api/v1/doctors";
 
 export default function NewInvoiceDrawer({
   isOpen,
