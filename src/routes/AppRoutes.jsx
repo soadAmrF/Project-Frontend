@@ -2,7 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 
 import MainLayout from "@/components/layout/MainLayout";
 import LoginPage from "@/Pages/Auth/Login/LoginPage";
-import Dashboard from "@/pages/Dashboard/Dashboard";
+import Dashboard from "@/Pages/Dashboard/Dashboard";
 import Profile from "@/Pages/Profile/Profile";
 import ProtectedRoute from "./ProtectedRoute";
 import Doctors from "@/Pages/Doctors/Doctors";
