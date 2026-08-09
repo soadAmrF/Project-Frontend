@@ -1,7 +1,7 @@
 import { NavLink, useLocation } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { useState, useEffect } from "react";
-import "./sidebar.css";
+import "./Sidebar.css";
 
 export default function Sidebar({ openSidebar, setOpenSidebar }) {
   const token = localStorage.getItem("token");
