@@ -2,67 +2,89 @@ export default function InventoryTable({ items, loading, onEdit, onDelete }) {
   const itemsArray = Array.isArray(items) ? items : [];
 
   return (
-    <div className="card">
-      <div className="table-responsive">
-        <table className="table table-hover align-middle mb-0">
-          <thead className="table-light">
+    <div className="inventory-table-card">
+      {" "}
+      <div className="inventory-table-wrapper">
+        {" "}
+        <table className="inventory-table">
+          {" "}
+          <thead>
+            {" "}
             <tr>
-              <th>الاسم</th>
-              <th>التصنيف</th>
-              <th>الكمية</th>
-              <th>حد الطلب</th>
-              <th>التكلفة</th>
-              <th>الصلاحية</th>
-              <th>إجراءات</th>
-            </tr>
+              {" "}
+              <th>Item Name</th> <th>Category</th> <th>Quantity</th>{" "}
+              <th>Reorder Level</th> <th>Cost Price</th> <th>Expiry Date</th>{" "}
+              <th>Actions</th>{" "}
+            </tr>{" "}
           </thead>
-
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={7} className="text-center py-4">
-                  <div className="spinner-border text-primary" role="status" />
+                <td colSpan={7} className="inventory-loading">
+                  <div
+                    className="spinner-border text-primary"
+                    role="status"
+                  ></div>
                 </td>
               </tr>
             ) : itemsArray.length === 0 ? (
               <tr>
-                <td colSpan={7} className="text-center py-4 text-muted">
-                  لا توجد أصناف
+                <td colSpan={7} className="inventory-empty">
+                  <i className="bi bi-inbox"></i>
+                  <div>No inventory items found</div>
                 </td>
               </tr>
             ) : (
               itemsArray.map((item) => {
-                const isLow = item.quantity <= item.reorderLevel;
+                const quantity = Number(item.quantity || 0);
+                const reorderLevel = Number(item.reorderLevel || 0);
+
+                const isLow = quantity <= reorderLevel;
+
                 const isExpired =
                   item.expiryDate && new Date(item.expiryDate) <= new Date();
 
                 return (
                   <tr key={item._id}>
-                    <td>{item.name}</td>
+                    {/* Name */}
                     <td>
-                      <span className="badge bg-light text-dark border">
-                        {item.category}
+                      <span className="inventory-item-name">{item.name}</span>
+                    </td>
+
+                    {/* Category */}
+                    <td>
+                      <span className="inventory-category">
+                        {item.category || "-"}
                       </span>
                     </td>
 
+                    {/* Quantity */}
                     <td>
                       <span
-                        className={`badge ${isLow ? "bg-warning text-dark" : "bg-success"}`}
+                        className={`inventory-quantity ${
+                          isLow ? "low" : "normal"
+                        }`}
                       >
-                        {item.quantity} {item.unit}
+                        {quantity} {item.unit || ""}
                       </span>
                     </td>
 
-                    <td>{item.reorderLevel}</td>
-                    <td>{item.costPrice} ج.م</td>
+                    {/* Reorder */}
+                    <td>{reorderLevel}</td>
 
+                    {/* Cost */}
+                    <td>{Number(item.costPrice || 0).toFixed(2)} EGP</td>
+
+                    {/* Expiry */}
                     <td>
                       {item.expiryDate ? (
                         <span
-                          className={`badge ${isExpired ? "bg-danger" : "bg-light text-dark border"}`}
+                          className={`inventory-expiry ${
+                            isExpired ? "expired" : "normal"
+                          }`}
                         >
                           {new Date(item.expiryDate).toLocaleDateString(
-                            "ar-EG",
+                            "en-GB",
                           )}
                         </span>
                       ) : (
@@ -70,19 +92,25 @@ export default function InventoryTable({ items, loading, onEdit, onDelete }) {
                       )}
                     </td>
 
+                    {/* Actions */}
                     <td>
-                      <div className="d-flex gap-2">
+                      <div className="inventory-actions">
                         <button
-                          className="btn btn-sm btn-outline-primary"
+                          type="button"
+                          className="inventory-action-btn edit"
+                          title="Edit"
                           onClick={() => onEdit(item)}
                         >
-                          تعديل
+                          <i className="bi bi-pencil"></i>
                         </button>
+
                         <button
-                          className="btn btn-sm btn-outline-danger"
+                          type="button"
+                          className="inventory-action-btn delete"
+                          title="Delete"
                           onClick={() => onDelete(item)}
                         >
-                          حذف
+                          <i className="bi bi-trash3"></i>
                         </button>
                       </div>
                     </td>

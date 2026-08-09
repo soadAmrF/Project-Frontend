@@ -1,6 +1,5 @@
 import api from "./axios";
 
-// دالة مساعدة لبناء Query String للفلترة والصفحات
 function buildQueryString(params = {}) {
   const query = Object.entries(params)
     .filter(
@@ -35,7 +34,7 @@ export const createDoctor = (data) => api.post("/doctors", data);
 export const updateDoctor = (id, data) => api.put(`/doctors/${id}`, data);
 export const deleteDoctor = (id) => api.delete(`/doctors/${id}`);
 
-// ////////////////// Appointments (مفرد زي الراوتر) //////////////////
+// ////////////////// Appointments //////////////////
 export const getAppointments = () => api.get("/appointment");
 export const getAppointmentById = (id) => api.get(`/appointment/${id}`);
 export const createAppointment = (data) => api.post("/appointment", data);
@@ -43,7 +42,7 @@ export const updateAppointment = (id, data) =>
   api.patch(`/appointment/${id}`, data);
 export const deleteAppointment = (id) => api.delete(`/appointment/${id}`);
 
-// ////////////////// Patients (مفرد زي الراوتر) //////////////////
+// ////////////////// Patients//////////////////
 export const getPatients = () => api.get("/patient");
 export const getPatientById = (id) => api.get(`/patient/${id}`);
 export const addPatient = (patientData) => api.post("/patient", patientData);
@@ -51,8 +50,7 @@ export const updatePatient = (id, patientData) =>
   api.put(`/patient/${id}`, patientData);
 export const deletePatient = (id) => api.delete(`/patient/${id}`);
 
-// ////////////////// Medical Records (مفرد زي الراوتر) //////////////////
-// 🆕 الدوال الجديدة لصفحة Medical Records
+// ////////////////// Medical Records //////////////////
 export const getAllMedicalRecords = (params) =>
   api.get(`/medicalrecord${buildQueryString(params)}`);
 
@@ -62,7 +60,6 @@ export const getPatientMedicalRecords = (patientId) =>
 export const updateMedicalRecordNotes = (id, data) =>
   api.patch(`/medicalrecord/${id}/notes`, data);
 
-// ✅ الدوال القديمة (محافظين عليها عشان الكود الحالي ميكنسرش)
 export const createMedicalRecord = (recordData) =>
   api.post("/medicalrecord", recordData);
 export const getMedicalRecords = () => api.get("/medicalrecord");
@@ -100,7 +97,6 @@ export const updateLabTest = (id, data) => api.patch(`/lab-tests/${id}`, data);
 export const deleteLabTest = (id) => api.delete(`/lab-tests/${id}`);
 
 // ==================== Lab Orders ====================
-// ==================== Lab Orders ====================
 export const getAllLabOrders = (params) => api.get("/lab-orders", { params });
 export const getLabOrderById = (id) => api.get(`/lab-orders/${id}`);
 export const createLabOrder = (data) => api.post("/lab-orders", data);
@@ -127,7 +123,7 @@ export const register = (data) => api.post("/auth/register", data);
 export const logout = () => api.post("/auth/logout");
 export const getCurrentUser = () => api.get("/auth/me");
 
-// ////////////////// Aliases (للتوافق مع الملفات القديمة) //////////////////
+// ////////////////// Aliases //////////////////
 export { getAllLabOrders as getLabOrders };
 
 

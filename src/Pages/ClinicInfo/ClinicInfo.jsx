@@ -14,10 +14,10 @@ const initialForm = {
   whatsapp: "",
   address: "",
   city: "",
-  country: "مصر",
+  country: "Egypt",
   invoicePrefix: "INV",
   invoiceNote: "",
-  thankYouMessage: "شكراً لثقتكم بنا، نتمنى لكم الشفاء العاجل",
+  thankYouMessage: "Thank you for trusting us. We wish you a speedy recovery.",
   taxRate: "0",
   taxNumber: "",
   commercialRegister: "",
@@ -27,7 +27,7 @@ const initialForm = {
   workingHours: "",
   facebook: "",
   instagram: "",
-  currency: "ج.م",
+  currency: "EGP",
 };
 
 function normalizeForm(data = {}) {
@@ -74,7 +74,9 @@ export default function ClinicInfo() {
         console.error("Failed to load clinic info:", err);
 
         if (!silent) {
-          setError("تعذر تحميل بيانات العيادة. حاول مرة أخرى لاحقًا.");
+          setError(
+            "Unable to load clinic information. Please try again later.",
+          );
         }
       } finally {
         if (showLoading) {
@@ -132,75 +134,117 @@ export default function ClinicInfo() {
 
       await updateClinicInfo(payload);
 
-      setSuccess("تم حفظ بيانات العيادة بنجاح");
+      setSuccess("Clinic information saved successfully.");
 
-      await loadClinicInfo({ showLoading: false, silent: true });
+      await loadClinicInfo({
+        showLoading: false,
+        silent: true,
+      });
     } catch (err) {
-      setError(err.response?.data?.message || "فشل في حفظ البيانات");
+      setError(
+        err.response?.data?.message || "Failed to save clinic information.",
+      );
     } finally {
       setSaving(false);
     }
   };
 
   return (
-    <div className="container-fluid py-4 clinic-info-page" dir="rtl">
-      <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
-        <h2 className="mb-0">بيانات العيادة</h2>
+    <div className="clinic-info-page">
+      {/* PAGE HEADER */}
+      <div className="clinic-settings-header">
+        <div>
+          <div className="clinic-settings-title">
+            <div className="clinic-settings-title-icon">
+              <i className="bi bi-gear"></i>
+            </div>
+
+            <div>
+              <h2>Clinic Settings</h2>
+              <p>
+                Manage your clinic information, contact details, invoices and
+                banking information.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
+      {/* ALERTS */}
       {error && (
-        <div className="alert alert-danger" role="alert">
-          {error}
+        <div className="clinic-alert clinic-alert-error" role="alert">
+          <i className="bi bi-exclamation-circle"></i>
+          <span>{error}</span>
+
+          <button type="button" onClick={() => setError("")}>
+            <i className="bi bi-x"></i>
+          </button>
         </div>
       )}
 
       {success && (
-        <div className="alert alert-success" role="alert">
-          {success}
+        <div className="clinic-alert clinic-alert-success" role="alert">
+          <i className="bi bi-check-circle"></i>
+          <span>{success}</span>
+
+          <button type="button" onClick={() => setSuccess("")}>
+            <i className="bi bi-x"></i>
+          </button>
         </div>
       )}
 
       <form onSubmit={handleSubmit}>
-        <div className="row g-4">
-          {/* البيانات الأساسية */}
-          <div className="col-md-6">
-            <div className="card h-100">
-              <div className="card-header bg-primary text-white">
-                <h5 className="mb-0">
-                  <i className="bi bi-building me-2"></i>
-                  البيانات الأساسية
-                </h5>
+        <div className="clinic-settings-grid">
+          {/* =================================================
+              BASIC INFORMATION
+          ================================================= */}
+
+          <section className="settings-card">
+            <div className="settings-card-header">
+              <div className="settings-card-icon primary">
+                <i className="bi bi-building"></i>
               </div>
 
-              <div className="card-body">
-                <div className="mb-3">
-                  <label className="form-label">اسم العيادة (إنجليزي) *</label>
+              <div>
+                <h3>Basic Information</h3>
+                <p>General information about your clinic</p>
+              </div>
+            </div>
+
+            <div className="settings-card-body">
+              <div className="settings-form-grid">
+                <div className="settings-field">
+                  <label>
+                    Clinic Name <span>*</span>
+                  </label>
+
                   <input
                     type="text"
-                    className="form-control"
                     name="name"
                     value={form.name || ""}
                     onChange={handleChange}
                     required
+                    placeholder="Enter clinic name"
                   />
                 </div>
 
-                <div className="mb-3">
-                  <label className="form-label">اسم العيادة (عربي)</label>
+                <div className="settings-field">
+                  <label>Clinic Name (Arabic)</label>
+
                   <input
                     type="text"
-                    className="form-control"
                     name="nameAr"
                     value={form.nameAr || ""}
                     onChange={handleChange}
+                    placeholder="Enter Arabic name"
                   />
                 </div>
 
-                <div className="mb-3">
-                  <label className="form-label">الشعار (رابط الصورة)</label>
+                <div className="settings-field full-width">
+                  <label>Logo URL</label>
+
                   <input
                     type="text"
-                    className="form-control"
                     name="logo"
                     value={form.logo || ""}
                     onChange={handleChange}
@@ -208,338 +252,393 @@ export default function ClinicInfo() {
                   />
 
                   {form.logo && !logoError && (
-                    <img
-                      src={form.logo}
-                      alt="Logo"
-                      className="mt-2"
-                      style={{ maxHeight: "60px" }}
-                      onError={() => setLogoError(true)}
-                    />
+                    <div className="logo-preview">
+                      <img
+                        src={form.logo}
+                        alt="Clinic Logo"
+                        onError={() => setLogoError(true)}
+                      />
+                    </div>
                   )}
 
                   {form.logo && logoError && (
-                    <div className="text-danger small mt-2">
-                      تعذر تحميل صورة الشعار. تأكد من الرابط.
+                    <div className="logo-error">
+                      <i className="bi bi-image"></i>
+                      Unable to load the logo. Please check the URL.
                     </div>
                   )}
                 </div>
 
-                <div className="mb-3">
-                  <label className="form-label">الشعار النصي (Slogan)</label>
+                <div className="settings-field full-width">
+                  <label>Slogan</label>
+
                   <input
                     type="text"
-                    className="form-control"
                     name="slogan"
                     value={form.slogan || ""}
                     onChange={handleChange}
-                    placeholder="ابتسامتك هي أولويتنا"
+                    placeholder="Your smile is our priority"
                   />
                 </div>
               </div>
             </div>
-          </div>
+          </section>
 
-          {/* بيانات التواصل */}
-          <div className="col-md-6">
-            <div className="card h-100">
-              <div className="card-header bg-success text-white">
-                <h5 className="mb-0">
-                  <i className="bi bi-telephone me-2"></i>
-                  بيانات التواصل
-                </h5>
+          {/* =================================================
+              CONTACT INFORMATION
+          ================================================= */}
+
+          <section className="settings-card">
+            <div className="settings-card-header">
+              <div className="settings-card-icon green">
+                <i className="bi bi-telephone"></i>
               </div>
 
-              <div className="card-body">
-                <div className="row g-3">
-                  <div className="col-md-6">
-                    <label className="form-label">رقم الهاتف *</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      name="phone"
-                      value={form.phone || ""}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-
-                  <div className="col-md-6">
-                    <label className="form-label">رقم هاتف 2</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      name="phone2"
-                      value={form.phone2 || ""}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  <div className="col-md-6">
-                    <label className="form-label">البريد الإلكتروني</label>
-                    <input
-                      type="email"
-                      className="form-control"
-                      name="email"
-                      value={form.email || ""}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  <div className="col-md-6">
-                    <label className="form-label">واتساب</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      name="whatsapp"
-                      value={form.whatsapp || ""}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  <div className="col-md-6">
-                    <label className="form-label">الموقع الإلكتروني</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      name="website"
-                      value={form.website || ""}
-                      onChange={handleChange}
-                      placeholder="https://www.example.com"
-                    />
-                  </div>
-
-                  <div className="col-md-6">
-                    <label className="form-label">فيسبوك</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      name="facebook"
-                      value={form.facebook || ""}
-                      onChange={handleChange}
-                      placeholder="https://facebook.com/clinic"
-                    />
-                  </div>
-
-                  <div className="col-md-6">
-                    <label className="form-label">انستجرام</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      name="instagram"
-                      value={form.instagram || ""}
-                      onChange={handleChange}
-                      placeholder="https://instagram.com/clinic"
-                    />
-                  </div>
-
-                  <div className="col-12">
-                    <label className="form-label">العنوان</label>
-                    <textarea
-                      className="form-control"
-                      name="address"
-                      rows="2"
-                      value={form.address || ""}
-                      onChange={handleChange}
-                    ></textarea>
-                  </div>
-
-                  <div className="col-md-6">
-                    <label className="form-label">المدينة</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      name="city"
-                      value={form.city || ""}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  <div className="col-md-6">
-                    <label className="form-label">الدولة</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      name="country"
-                      value={form.country || ""}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  <div className="col-12">
-                    <label className="form-label">ساعات العمل</label>
-                    <textarea
-                      className="form-control"
-                      name="workingHours"
-                      rows="2"
-                      value={form.workingHours || ""}
-                      onChange={handleChange}
-                      placeholder="السبت - الخميس: 9 صباحاً - 10 مساءً"
-                    ></textarea>
-                  </div>
-                </div>
+              <div>
+                <h3>Contact Information</h3>
+                <p>How patients can reach your clinic</p>
               </div>
             </div>
-          </div>
 
-          {/* بيانات الفواتير */}
-          <div className="col-md-6">
-            <div className="card h-100">
-              <div className="card-header bg-warning text-dark">
-                <h5 className="mb-0">
-                  <i className="bi bi-receipt me-2"></i>
-                  بيانات الفواتير
-                </h5>
-              </div>
+            <div className="settings-card-body">
+              <div className="settings-form-grid">
+                <div className="settings-field">
+                  <label>
+                    Phone Number <span>*</span>
+                  </label>
 
-              <div className="card-body">
-                <div className="row g-3">
-                  <div className="col-md-6">
-                    <label className="form-label">بادئة الفاتورة</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      name="invoicePrefix"
-                      value={form.invoicePrefix || ""}
-                      onChange={handleChange}
-                      placeholder="INV"
-                    />
-                    <small className="text-muted">مثال: INV-2026-001</small>
-                  </div>
-
-                  <div className="col-md-6">
-                    <label className="form-label">نسبة الضريبة (%)</label>
-                    <input
-                      type="number"
-                      className="form-control"
-                      name="taxRate"
-                      value={form.taxRate || ""}
-                      onChange={handleChange}
-                      min="0"
-                      max="100"
-                      step="0.01"
-                    />
-                  </div>
-
-                  <div className="col-md-6">
-                    <label className="form-label">العملة</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      name="currency"
-                      value={form.currency || ""}
-                      onChange={handleChange}
-                      placeholder="ج.م"
-                    />
-                  </div>
-
-                  <div className="col-md-6">
-                    <label className="form-label">الرقم الضريبي</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      name="taxNumber"
-                      value={form.taxNumber || ""}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  <div className="col-md-6">
-                    <label className="form-label">السجل التجاري</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      name="commercialRegister"
-                      value={form.commercialRegister || ""}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  <div className="col-12">
-                    <label className="form-label">ملاحظة الفاتورة</label>
-                    <textarea
-                      className="form-control"
-                      name="invoiceNote"
-                      rows="2"
-                      value={form.invoiceNote || ""}
-                      onChange={handleChange}
-                      placeholder="تظهر هذه الملاحظة أسفل الفاتورة"
-                    ></textarea>
-                  </div>
-
-                  <div className="col-12">
-                    <label className="form-label">رسالة الشكر</label>
-                    <textarea
-                      className="form-control"
-                      name="thankYouMessage"
-                      rows="2"
-                      value={form.thankYouMessage || ""}
-                      onChange={handleChange}
-                    ></textarea>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* بيانات البنك */}
-          <div className="col-md-6">
-            <div className="card h-100">
-              <div className="card-header bg-info text-white">
-                <h5 className="mb-0">
-                  <i className="bi bi-bank me-2"></i>
-                  بيانات البنك (اختياري)
-                </h5>
-              </div>
-
-              <div className="card-body">
-                <div className="mb-3">
-                  <label className="form-label">اسم البنك</label>
                   <input
                     type="text"
-                    className="form-control"
+                    name="phone"
+                    value={form.phone || ""}
+                    onChange={handleChange}
+                    required
+                    placeholder="Enter phone number"
+                  />
+                </div>
+
+                <div className="settings-field">
+                  <label>Phone Number 2</label>
+
+                  <input
+                    type="text"
+                    name="phone2"
+                    value={form.phone2 || ""}
+                    onChange={handleChange}
+                    placeholder="Optional phone number"
+                  />
+                </div>
+
+                <div className="settings-field">
+                  <label>Email Address</label>
+
+                  <input
+                    type="email"
+                    name="email"
+                    value={form.email || ""}
+                    onChange={handleChange}
+                    placeholder="clinic@example.com"
+                  />
+                </div>
+
+                <div className="settings-field">
+                  <label>WhatsApp</label>
+
+                  <input
+                    type="text"
+                    name="whatsapp"
+                    value={form.whatsapp || ""}
+                    onChange={handleChange}
+                    placeholder="WhatsApp number"
+                  />
+                </div>
+
+                <div className="settings-field">
+                  <label>Website</label>
+
+                  <input
+                    type="text"
+                    name="website"
+                    value={form.website || ""}
+                    onChange={handleChange}
+                    placeholder="https://www.example.com"
+                  />
+                </div>
+
+                <div className="settings-field">
+                  <label>Facebook</label>
+
+                  <input
+                    type="text"
+                    name="facebook"
+                    value={form.facebook || ""}
+                    onChange={handleChange}
+                    placeholder="https://facebook.com/clinic"
+                  />
+                </div>
+
+                <div className="settings-field">
+                  <label>Instagram</label>
+
+                  <input
+                    type="text"
+                    name="instagram"
+                    value={form.instagram || ""}
+                    onChange={handleChange}
+                    placeholder="https://instagram.com/clinic"
+                  />
+                </div>
+
+                <div className="settings-field">
+                  <label>City</label>
+
+                  <input
+                    type="text"
+                    name="city"
+                    value={form.city || ""}
+                    onChange={handleChange}
+                    placeholder="Cairo"
+                  />
+                </div>
+
+                <div className="settings-field">
+                  <label>Country</label>
+
+                  <input
+                    type="text"
+                    name="country"
+                    value={form.country || ""}
+                    onChange={handleChange}
+                    placeholder="Egypt"
+                  />
+                </div>
+
+                <div className="settings-field full-width">
+                  <label>Address</label>
+
+                  <textarea
+                    name="address"
+                    rows="2"
+                    value={form.address || ""}
+                    onChange={handleChange}
+                    placeholder="Enter clinic address"
+                  />
+                </div>
+
+                <div className="settings-field full-width">
+                  <label>Working Hours</label>
+
+                  <textarea
+                    name="workingHours"
+                    rows="2"
+                    value={form.workingHours || ""}
+                    onChange={handleChange}
+                    placeholder="Saturday - Thursday: 9 AM - 10 PM"
+                  />
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* =================================================
+              INVOICE INFORMATION
+          ================================================= */}
+
+          <section className="settings-card">
+            <div className="settings-card-header">
+              <div className="settings-card-icon orange">
+                <i className="bi bi-receipt"></i>
+              </div>
+
+              <div>
+                <h3>Invoice Settings</h3>
+                <p>Configure your clinic invoice information</p>
+              </div>
+            </div>
+
+            <div className="settings-card-body">
+              <div className="settings-form-grid">
+                <div className="settings-field">
+                  <label>Invoice Prefix</label>
+
+                  <input
+                    type="text"
+                    name="invoicePrefix"
+                    value={form.invoicePrefix || ""}
+                    onChange={handleChange}
+                    placeholder="INV"
+                  />
+
+                  <small>Example: INV-2026-001</small>
+                </div>
+
+                <div className="settings-field">
+                  <label>Tax Rate (%)</label>
+
+                  <input
+                    type="number"
+                    name="taxRate"
+                    value={form.taxRate || ""}
+                    onChange={handleChange}
+                    min="0"
+                    max="100"
+                    step="0.01"
+                    placeholder="0"
+                  />
+                </div>
+
+                <div className="settings-field">
+                  <label>Currency</label>
+
+                  <input
+                    type="text"
+                    name="currency"
+                    value={form.currency || ""}
+                    onChange={handleChange}
+                    placeholder="EGP"
+                  />
+                </div>
+
+                <div className="settings-field">
+                  <label>Tax Number</label>
+
+                  <input
+                    type="text"
+                    name="taxNumber"
+                    value={form.taxNumber || ""}
+                    onChange={handleChange}
+                    placeholder="Enter tax number"
+                  />
+                </div>
+
+                <div className="settings-field">
+                  <label>Commercial Register</label>
+
+                  <input
+                    type="text"
+                    name="commercialRegister"
+                    value={form.commercialRegister || ""}
+                    onChange={handleChange}
+                    placeholder="Enter commercial register"
+                  />
+                </div>
+
+                <div className="settings-field full-width">
+                  <label>Invoice Note</label>
+
+                  <textarea
+                    name="invoiceNote"
+                    rows="2"
+                    value={form.invoiceNote || ""}
+                    onChange={handleChange}
+                    placeholder="This note will appear at the bottom of the invoice"
+                  />
+                </div>
+
+                <div className="settings-field full-width">
+                  <label>Thank You Message</label>
+
+                  <textarea
+                    name="thankYouMessage"
+                    rows="2"
+                    value={form.thankYouMessage || ""}
+                    onChange={handleChange}
+                    placeholder="Thank you for trusting us."
+                  />
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* =================================================
+              BANK INFORMATION
+          ================================================= */}
+
+          <section className="settings-card">
+            <div className="settings-card-header">
+              <div className="settings-card-icon blue">
+                <i className="bi bi-bank"></i>
+              </div>
+
+              <div>
+                <h3>Bank Information</h3>
+                <p>Optional payment and banking information</p>
+              </div>
+
+              <span className="optional-badge">Optional</span>
+            </div>
+
+            <div className="settings-card-body">
+              <div className="settings-form-grid">
+                <div className="settings-field full-width">
+                  <label>Bank Name</label>
+
+                  <input
+                    type="text"
                     name="bankName"
                     value={form.bankName || ""}
                     onChange={handleChange}
+                    placeholder="Enter bank name"
                   />
                 </div>
 
-                <div className="mb-3">
-                  <label className="form-label">رقم الحساب</label>
+                <div className="settings-field">
+                  <label>Bank Account</label>
+
                   <input
                     type="text"
-                    className="form-control"
                     name="bankAccount"
                     value={form.bankAccount || ""}
                     onChange={handleChange}
+                    placeholder="Enter account number"
                   />
                 </div>
 
-                <div className="mb-3">
-                  <label className="form-label">IBAN</label>
+                <div className="settings-field">
+                  <label>IBAN</label>
+
                   <input
                     type="text"
-                    className="form-control"
                     name="bankIban"
                     value={form.bankIban || ""}
                     onChange={handleChange}
+                    placeholder="Enter IBAN"
                   />
                 </div>
               </div>
             </div>
-          </div>
+          </section>
         </div>
 
-        <div className="mt-4 d-flex justify-content-end">
+        {/* =================================================
+            SAVE
+        ================================================= */}
+
+        <div className="clinic-settings-footer">
+          <div className="save-info">
+            <i className="bi bi-shield-check"></i>
+
+            <span>Your clinic information is securely saved.</span>
+          </div>
+
           <button
             type="submit"
-            className="btn btn-primary btn-lg"
+            className="save-settings-btn"
             disabled={loading || saving}
           >
-            {saving
-              ? "جاري الحفظ..."
-              : loading
-                ? "جاري التحميل..."
-                : "حفظ البيانات"}
+            {saving ? (
+              <>
+                <span className="save-spinner"></span>
+                Saving...
+              </>
+            ) : loading ? (
+              "Loading..."
+            ) : (
+              <>
+                <i className="bi bi-check-lg"></i>
+                Save Changes
+              </>
+            )}
           </button>
         </div>
       </form>

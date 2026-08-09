@@ -1,23 +1,670 @@
-.clinic-info-page .card {
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+.clinic-info-page {
+  min-height: 100vh;
+  padding: 24px;
+
+  background: #f8fafc;
+
+  color: #334155;
 }
 
-.clinic-info-page .card-header {
+/* =========================================================
+   PAGE HEADER
+========================================================= */
+
+.clinic-settings-header {
+  margin-bottom: 22px;
+}
+
+.clinic-settings-title {
+  display: flex;
+  align-items: center;
+
+  gap: 13px;
+}
+
+.clinic-settings-title-icon {
+  width: 46px;
+  height: 46px;
+  min-width: 46px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 12px;
+
+  background: #eef2ff;
+  color: #4f46e5;
+
+  font-size: 20px;
+}
+
+.clinic-settings-title h2 {
+  margin: 0;
+
+  color: #172033;
+
+  font-size: 23px;
+  font-weight: 700;
+}
+
+.clinic-settings-title p {
+  margin: 4px 0 0;
+
+  color: #94a3b8;
+
+  font-size: 13px;
+}
+
+/* =========================================================
+   ALERTS
+========================================================= */
+
+.clinic-alert {
+  min-height: 46px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  margin-bottom: 18px;
+  padding: 10px 13px;
+
+  border-radius: 10px;
+
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.clinic-alert button {
+  width: 28px;
+  height: 28px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-left: auto;
+
+  border: none;
+  border-radius: 7px;
+
+  background: transparent;
+
+  cursor: pointer;
+}
+
+.clinic-alert-error {
+  border: 1px solid #fecaca;
+
+  background: #fef2f2;
+
+  color: #dc2626;
+}
+
+.clinic-alert-error button {
+  color: #dc2626;
+}
+
+.clinic-alert-success {
+  border: 1px solid #bbf7d0;
+
+  background: #f0fdf4;
+
+  color: #16a34a;
+}
+
+.clinic-alert-success button {
+  color: #16a34a;
+}
+
+/* =========================================================
+   SETTINGS GRID
+========================================================= */
+
+.clinic-settings-grid {
+  display: grid;
+
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: 18px;
+}
+
+/* =========================================================
+   SETTINGS CARD
+========================================================= */
+
+.settings-card {
+  min-width: 0;
+
+  overflow: hidden;
+
+  background: #ffffff;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 15px;
+
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+}
+
+/* =========================================================
+   CARD HEADER
+========================================================= */
+
+.settings-card-header {
+  position: relative;
+
+  min-height: 74px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 15px 18px;
+
+  border-bottom: 1px solid #eef2f7;
+
+  background: #ffffff;
+}
+
+.settings-card-icon {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 10px;
+
+  font-size: 17px;
+}
+
+.settings-card-icon.primary {
+  background: #eef2ff;
+  color: #4f46e5;
+}
+
+.settings-card-icon.green {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+.settings-card-icon.orange {
+  background: #fff7ed;
+  color: #ea580c;
+}
+
+.settings-card-icon.blue {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.settings-card-header h3 {
+  margin: 0;
+
+  color: #1e293b;
+
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.settings-card-header p {
+  margin: 3px 0 0;
+
+  color: #94a3b8;
+
+  font-size: 11px;
+}
+
+.optional-badge {
+  margin-left: auto;
+
+  padding: 5px 9px;
+
+  border-radius: 20px;
+
+  background: #f8fafc;
+
+  color: #94a3b8;
+
+  font-size: 10px;
   font-weight: 600;
 }
 
-.clinic-info-page .card-header i {
-  font-size: 1.2rem;
+/* =========================================================
+   CARD BODY
+========================================================= */
+
+.settings-card-body {
+  padding: 19px;
 }
 
-.clinic-info-page .form-label {
-  font-weight: 500;
-  font-size: 0.9rem;
+/* =========================================================
+   FORM GRID
+========================================================= */
+
+.settings-form-grid {
+  display: grid;
+
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: 15px;
 }
 
-.clinic-info-page img {
-  border: 1px solid #dee2e6;
+.settings-field {
+  min-width: 0;
+}
+
+.settings-field.full-width {
+  grid-column: 1 / -1;
+}
+
+.settings-field label {
+  display: block;
+
+  margin-bottom: 6px;
+
+  color: #334155;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.settings-field label span {
+  color: #ef4444;
+}
+
+/* =========================================================
+   INPUTS
+========================================================= */
+
+.settings-field input,
+.settings-field textarea {
+  width: 100%;
+
+  border: 1px solid #dbe2ea;
+
   border-radius: 8px;
+
+  background: #ffffff;
+
+  color: #334155;
+
+  font-size: 13px;
+
+  outline: none;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+
+  box-sizing: border-box;
+}
+
+.settings-field input {
+  height: 42px;
+
+  padding: 0 12px;
+}
+
+.settings-field textarea {
+  min-height: 80px;
+
+  padding: 10px 12px;
+
+  resize: vertical;
+
+  line-height: 1.5;
+}
+
+.settings-field input:focus,
+.settings-field textarea:focus {
+  border-color: #6366f1;
+
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.settings-field input::placeholder,
+.settings-field textarea::placeholder {
+  color: #b6c0ce;
+}
+
+.settings-field small {
+  display: block;
+
+  margin-top: 5px;
+
+  color: #94a3b8;
+
+  font-size: 10px;
+}
+
+/* =========================================================
+   LOGO PREVIEW
+========================================================= */
+
+.logo-preview {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+
+  margin-top: 10px;
+  padding: 10px;
+
+  border: 1px dashed #dbe2ea;
+
+  border-radius: 9px;
+
+  background: #f8fafc;
+}
+
+.logo-preview img {
+  max-width: 180px;
+  max-height: 65px;
+
+  object-fit: contain;
+
+  border-radius: 6px;
+}
+
+.logo-error {
+  display: flex;
+  align-items: center;
+
+  gap: 6px;
+
+  margin-top: 8px;
+
+  color: #dc2626;
+
+  font-size: 11px;
+}
+
+/* =========================================================
+   SAVE FOOTER
+========================================================= */
+
+.clinic-settings-footer {
+  min-height: 70px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 15px;
+
+  margin-top: 20px;
+  padding: 13px 17px;
+
+  background: #ffffff;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 13px;
+
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+}
+
+.save-info {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  color: #94a3b8;
+
+  font-size: 11px;
+}
+
+.save-info i {
+  color: #10b981;
+
+  font-size: 16px;
+}
+
+/* =========================================================
+   SAVE BUTTON
+========================================================= */
+
+.save-settings-btn {
+  min-width: 145px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  padding: 0 17px;
+
+  border: 1px solid #4f46c5;
+
+  border-radius: 9px;
+
+  background: #4f46c5;
+
+  color: #ffffff;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.save-settings-btn:hover:not(:disabled) {
+  background: #4338ca;
+
+  border-color: #4338ca;
+
+  transform: translateY(-1px);
+
+  box-shadow: 0 5px 14px rgba(79, 70, 229, 0.2);
+}
+
+.save-settings-btn:disabled {
+  opacity: 0.65;
+
+  cursor: not-allowed;
+}
+
+/* =========================================================
+   LOADING SPINNER
+========================================================= */
+
+.save-spinner {
+  width: 14px;
+  height: 14px;
+
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #ffffff;
+
+  border-radius: 50%;
+
+  animation: saveSpin 0.7s linear infinite;
+}
+
+@keyframes saveSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 992px) {
+  .clinic-settings-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+  .clinic-info-page {
+    padding: 16px;
+  }
+
+  .clinic-settings-title h2 {
+    font-size: 20px;
+  }
+
+  .clinic-settings-title p {
+    font-size: 12px;
+  }
+
+  .settings-card-header {
+    padding: 14px 15px;
+  }
+
+  .settings-card-body {
+    padding: 15px;
+  }
+
+  .settings-form-grid {
+    grid-template-columns: 1fr;
+    gap: 13px;
+  }
+
+  .settings-field.full-width {
+    grid-column: auto;
+  }
+
+  .clinic-settings-footer {
+    align-items: stretch;
+
+    flex-direction: column;
+
+    padding: 13px;
+  }
+
+  .save-info {
+    justify-content: center;
+  }
+
+  .save-settings-btn {
+    width: 100%;
+  }
+}
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 480px) {
+  .clinic-info-page {
+    padding: 11px;
+  }
+
+  .clinic-settings-title {
+    align-items: flex-start;
+  }
+
+  .clinic-settings-title-icon {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+
+    font-size: 17px;
+  }
+
+  .clinic-settings-title h2 {
+    font-size: 18px;
+  }
+
+  .clinic-settings-title p {
+    font-size: 11px;
+    line-height: 1.5;
+  }
+
+  .settings-card {
+    border-radius: 12px;
+  }
+
+  .settings-card-header {
+    min-height: 66px;
+
+    padding: 12px;
+  }
+
+  .settings-card-icon {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+
+    font-size: 15px;
+  }
+
+  .settings-card-header h3 {
+    font-size: 13px;
+  }
+
+  .settings-card-header p {
+    font-size: 10px;
+  }
+
+  .optional-badge {
+    display: none;
+  }
+
+  .settings-card-body {
+    padding: 12px;
+  }
+
+  .settings-field label {
+    font-size: 11px;
+  }
+
+  .settings-field input {
+    height: 40px;
+
+    font-size: 12px;
+  }
+
+  .settings-field textarea {
+    font-size: 12px;
+  }
+
+  .clinic-alert {
+    font-size: 11px;
+  }
+}
+
+/* =========================================================
+   VERY SMALL MOBILE
+========================================================= */
+
+@media (max-width: 360px) {
+  .clinic-info-page {
+    padding: 8px;
+  }
+
+  .clinic-settings-title-icon {
+    display: none;
+  }
+
+  .clinic-settings-title h2 {
+    font-size: 17px;
+  }
+
+  .settings-card-header {
+    padding: 10px;
+  }
+
+  .settings-card-body {
+    padding: 10px;
+  }
 }

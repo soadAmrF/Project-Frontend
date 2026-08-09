@@ -1,94 +1,169 @@
-import React, { useState, useEffect } from "react";
-import InvoiceStats from "./Components/InvoiceStats";
+import React, { useEffect, useState } from "react";
 import InvoiceTable from "./Components/InvoiceTable";
 import NewInvoiceDrawer from "./Components/NewInvoiceDrawer";
 import "./Invoices.css";
+import PageHeader from "@/components/PageHeader";
+
+const API_URL = "http://localhost:7000/api/v1/invoice";
 
 export default function Invoices() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
+  const [invoices, setInvoices] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // 1. قراءة الفواتير من localStorage أولاً كقيمة أولية لكي لا يختفي شيء عند الـ Refresh
-  const [invoices, setInvoices] = useState(() => {
-    const savedInvoices = localStorage.getItem("app_invoices");
-    return savedInvoices ? JSON.parse(savedInvoices) : [];
-  });
+  // =========================
+  // GET ALL INVOICES
+  // =========================
+  const fetchInvoices = async () => {
+    try {
+      setLoading(true);
 
-  // 2. مزامنة وتحديث localStorage فور تغير قائمة الفواتير
-  useEffect(() => {
-    localStorage.setItem("app_invoices", JSON.stringify(invoices));
-  }, [invoices]);
+      const token = localStorage.getItem("token");
 
-  // 3. جلب البيانات من الباك إند (اختياري عند وجود سيرفر)
+      const response = await fetch(`${API_URL}/all`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      const result = await response.json();
+
+      console.log("Invoices API:", result);
+
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to get invoices");
+      }
+
+      setInvoices(result.data || []);
+    } catch (error) {
+      console.error("Get invoices error:", error);
+      setInvoices([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchInvoices();
   }, []);
 
-  const fetchInvoices = async () => {
+  // =========================
+  // CREATE INVOICE
+  // =========================
+  const handleSaveInvoice = async (newInvoice) => {
     try {
-      const response = await fetch("/api/invoices");
-      if (response.ok) {
-        const data = await response.json();
-        if (data && data.length > 0) {
-          setInvoices(data);
-        }
-      }
-    } catch (error) {
-      console.log("Using local persistence storage");
-    }
-  };
+      const token = localStorage.getItem("token");
 
-  // 4. حفظ الفاتورة بالجهة الرئيسية والباك إند والذاكرة
-  const handleSaveInvoice = async (newInv) => {
-    const tempInvoice = {
-      ...newInv,
-      _id: Date.now().toString(),
-      invoiceNumber:
-        newInv.invoiceNumber ||
-        `INV-${Math.floor(1000 + Math.random() * 9000)}`,
-      createdAt: new Date().toISOString(),
-    };
-
-    // إضافتها أعلى القائمة مباشرة
-    setInvoices((prev) => [tempInvoice, ...prev]);
-
-    setSearch("");
-    setStatusFilter("");
-    setIsModalOpen(false);
-
-    // إرسالها للباك إند في الخلفية
-    try {
-      await fetch("/api/invoices", {
+      const response = await fetch(API_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(tempInvoice),
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newInvoice),
       });
-    } catch (error) {
-      console.error("Backend offline, saved locally.", error);
-    }
-  };
 
-  // 5. حذف الفاتورة
-  const handleDeleteInvoice = async (invoiceId, indexToDelete) => {
-    setInvoices((prev) => prev.filter((_, idx) => idx !== indexToDelete));
-    try {
-      if (invoiceId) {
-        await fetch(`/api/invoices/${invoiceId}`, { method: "DELETE" });
+      const result = await response.json();
+
+      console.log("Create invoice:", result);
+
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to create invoice");
       }
+
+      await fetchInvoices();
+
+      setSearch("");
+      setStatusFilter("");
+      setIsModalOpen(false);
     } catch (error) {
-      console.error("Backend delete failed", error);
+      console.error("Create invoice error:", error);
+      alert(error.message);
     }
   };
 
-  // 6. فلترة الفواتير
+  // =========================
+  // CANCEL INVOICE
+  // =========================
+  const handleCancelInvoice = async (invoiceId) => {
+    if (!invoiceId) return;
+
+    const confirmCancel = window.confirm(
+      "Are you sure you want to cancel this invoice?",
+    );
+
+    if (!confirmCancel) return;
+
+    try {
+      const token = localStorage.getItem("token");
+
+      const response = await fetch(`${API_URL}/${invoiceId}/cancel`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      const result = await response.json();
+
+      console.log("Cancel invoice:", result);
+
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to cancel invoice");
+      }
+
+      await fetchInvoices();
+    } catch (error) {
+      console.error("Cancel invoice error:", error);
+      alert(error.message);
+    }
+  };
+
+  // =========================
+  // STATS
+  // =========================
+  const totalBilled = invoices.reduce(
+    (sum, invoice) => sum + (Number(invoice.total) || 0),
+    0,
+  );
+
+  const paidCount = invoices.filter(
+    (invoice) => invoice.status === "paid",
+  ).length;
+
+  const unpaidCount = invoices.filter(
+    (invoice) => invoice.status === "unpaid",
+  ).length;
+
+  const cancelledCount = invoices.filter(
+    (invoice) => invoice.status === "cancelled",
+  ).length;
+
+  // =========================
+  // FILTER
+  // =========================
   const filteredInvoices = invoices.filter((inv) => {
-    const patientName = inv.patientName || inv.patient_name || "";
-    const invNumber = inv.invoiceNumber || inv.invoice_number || "";
+    const patientName = inv.patientId?.fullName || inv.patientName || "";
+
+    const invoiceNumber = inv.invoiceNumber?.toString() || "";
+
+    const doctorName =
+      inv.doctorId?.userId?.fullName ||
+      inv.doctorId?.userId?.fullname ||
+      inv.doctorName ||
+      "";
+
+    const searchValue = search.toLowerCase().trim();
 
     const matchesSearch =
-      invNumber.toString().toLowerCase().includes(search.toLowerCase()) ||
-      patientName.toLowerCase().includes(search.toLowerCase());
+      invoiceNumber.toLowerCase().includes(searchValue) ||
+      patientName.toLowerCase().includes(searchValue) ||
+      doctorName.toLowerCase().includes(searchValue);
 
     const matchesStatus = statusFilter ? inv.status === statusFilter : true;
 
@@ -97,21 +172,93 @@ export default function Invoices() {
 
   return (
     <div className="invoices-page">
-      <h1>Invoices & Billing</h1>
+        <PageHeader />
 
-      <InvoiceStats invoices={invoices} />
 
-      <InvoiceTable
-        invoices={filteredInvoices}
-        search={search}
-        setSearch={setSearch}
-        statusFilter={statusFilter}
-        setStatusFilter={setStatusFilter}
-        onDeleteInvoice={handleDeleteInvoice}
-        onPrintInvoice={() => window.print()}
-        onOpenNewInvoiceModal={() => setIsModalOpen(true)}
-      />
+      <div className="stats-grid">
+        <div className="stat-card">
+          <div className="stat-icon icon-blue">
+            <i className="bi bi-cash-stack"></i>
+          </div>
 
+          <div className="stat-info">
+            <span className="stat-title">Total Billed</span>
+
+            <h2 className="stat-value">
+              {totalBilled.toLocaleString("en-EG", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}{" "}
+              <small>EGP</small>
+            </h2>
+
+            <span className="stat-sub">All invoices</span>
+          </div>
+        </div>
+
+        <div className="stat-card">
+          <div className="stat-icon icon-green">
+            <i className="bi bi-check2-circle"></i>
+          </div>
+
+          <div className="stat-info">
+            <span className="stat-title">Paid Invoices</span>
+
+            <h2 className="stat-value text-green">{paidCount}</h2>
+
+            <span className="stat-sub">Completed payments</span>
+          </div>
+        </div>
+
+        <div className="stat-card">
+          <div className="stat-icon icon-orange">
+            <i className="bi bi-clock-history"></i>
+          </div>
+
+          <div className="stat-info">
+            <span className="stat-title">Unpaid Invoices</span>
+
+            <h2 className="stat-value text-orange">{unpaidCount}</h2>
+
+            <span className="stat-sub">Waiting for payment</span>
+          </div>
+        </div>
+
+        <div className="stat-card">
+          <div className="stat-icon icon-gray">
+            <i className="bi bi-x-circle"></i>
+          </div>
+
+          <div className="stat-info">
+            <span className="stat-title">Cancelled</span>
+
+            <h2 className="stat-value text-gray">{cancelledCount}</h2>
+
+            <span className="stat-sub">Cancelled invoices</span>
+          </div>
+        </div>
+      </div>
+
+      {/* TABLE */}
+      {loading ? (
+        <div className="invoice-loading">
+          <div className="loading-spinner"></div>
+          <span>Loading invoices...</span>
+        </div>
+      ) : (
+        <InvoiceTable
+          invoices={filteredInvoices}
+          search={search}
+          setSearch={setSearch}
+          statusFilter={statusFilter}
+          setStatusFilter={setStatusFilter}
+          onDeleteInvoice={handleCancelInvoice}
+          onPrintInvoice={() => window.print()}
+          onOpenNewInvoiceModal={() => setIsModalOpen(true)}
+        />
+      )}
+
+      {/* DRAWER */}
       <NewInvoiceDrawer
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

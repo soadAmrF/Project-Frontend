@@ -1,7 +1,7 @@
 const SearchBar = ({ search, setSearch }) => {
-  return (
-    <div className="row mb-4">
-      <div className="col-12 col-md-6 col-lg-4">
+   return (
+    <div className="user-search-card">
+      <div className="user-search-wrapper">
         <div className="input-group">
           <span className="input-group-text">
             <i className="bi bi-search"></i>

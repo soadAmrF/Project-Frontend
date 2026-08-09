@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 import PageHeader from "@/components/PageHeader";
 import "./Reception.css";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+
 import {
   getAppointments,
   getPatients,
@@ -12,7 +13,7 @@ import {
   addPatient,
 } from "@/services/api";
 
-// ==================== Component: Quick Add Patient Modal ====================
+// ==================== Quick Add Patient Modal ====================
 function QuickAddPatientModal({ onClose, onPatientAdded }) {
   const [formData, setFormData] = useState({
     fullName: "",
@@ -21,43 +22,66 @@ function QuickAddPatientModal({ onClose, onPatientAdded }) {
     bloodGroup: "",
     medicalNotes: "",
   });
+
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
     if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }));
+      setErrors((prev) => ({
+        ...prev,
+        [name]: "",
+      }));
     }
   };
 
   const validate = () => {
     const newErrors = {};
-    if (!formData.fullName.trim())
+
+    if (!formData.fullName.trim()) {
       newErrors.fullName = "Patient name is required";
-    if (!formData.phone.trim()) newErrors.phone = "Phone number is required";
-    else if (!/^01[0-9]{9}$/.test(formData.phone))
+    }
+
+    if (!formData.phone.trim()) {
+      newErrors.phone = "Phone number is required";
+    } else if (!/^01[0-9]{9}$/.test(formData.phone)) {
       newErrors.phone = "Phone number must be 01xxxxxxxxx";
-    if (!formData.gender) newErrors.gender = "Gender is required";
+    }
+
+    if (!formData.gender) {
+      newErrors.gender = "Gender is required";
+    }
+
     return newErrors;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const validationErrors = validate();
+
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
     }
 
     setIsSubmitting(true);
+
     try {
       const res = await addPatient(formData);
       const newPatient = res.data?.data || res.data;
+
       onPatientAdded(newPatient);
     } catch (err) {
       const msg = err.response?.data?.message || "Failed to add patient";
+
       alert(msg);
     } finally {
       setIsSubmitting(false);
@@ -72,30 +96,36 @@ function QuickAddPatientModal({ onClose, onPatientAdded }) {
             <i className="bi bi-person-plus-fill me-2"></i>
             Add New Patient
           </h2>
-          <button className="btn-close" onClick={onClose}></button>
+
+          <button
+            type="button"
+            className="btn-close"
+            onClick={onClose}
+          ></button>
         </div>
 
         <form onSubmit={handleSubmit}>
-          <div className="form-row">
-            <div className="field">
-              <label>Full Name *</label>
-              <input
-                type="text"
-                name="fullName"
-                value={formData.fullName}
-                onChange={handleChange}
-                placeholder="John Doe"
-                className={errors.fullName ? "error" : ""}
-              />
-              {errors.fullName && (
-                <span className="error-text">{errors.fullName}</span>
-              )}
-            </div>
+          <div className="field">
+            <label>Full Name *</label>
+
+            <input
+              type="text"
+              name="fullName"
+              value={formData.fullName}
+              onChange={handleChange}
+              placeholder="John Doe"
+              className={errors.fullName ? "error" : ""}
+            />
+
+            {errors.fullName && (
+              <span className="error-text">{errors.fullName}</span>
+            )}
           </div>
 
           <div className="form-row">
             <div className="field">
               <label>Phone Number *</label>
+
               <input
                 type="tel"
                 name="phone"
@@ -105,6 +135,7 @@ function QuickAddPatientModal({ onClose, onPatientAdded }) {
                 maxLength={11}
                 className={errors.phone ? "error" : ""}
               />
+
               {errors.phone && (
                 <span className="error-text">{errors.phone}</span>
               )}
@@ -112,6 +143,7 @@ function QuickAddPatientModal({ onClose, onPatientAdded }) {
 
             <div className="field">
               <label>Gender *</label>
+
               <select
                 name="gender"
                 value={formData.gender}
@@ -123,32 +155,32 @@ function QuickAddPatientModal({ onClose, onPatientAdded }) {
             </div>
           </div>
 
-          <div className="form-row">
-            <div className="field">
-              <label>Blood Group (Optional)</label>
-              <select
-                name="bloodGroup"
-                value={formData.bloodGroup}
-                onChange={handleChange}
-              >
-                <option value="">Unknown</option>
-                <option value="A+">A+</option>
-                <option value="A-">A-</option>
-                <option value="B+">B+</option>
-                <option value="B-">B-</option>
-                <option value="AB+">AB+</option>
-                <option value="AB-">AB-</option>
-                <option value="O+">O+</option>
-                <option value="O-">O-</option>
-              </select>
-            </div>
+          <div className="field">
+            <label>Blood Group</label>
+
+            <select
+              name="bloodGroup"
+              value={formData.bloodGroup}
+              onChange={handleChange}
+            >
+              <option value="">Unknown</option>
+              <option value="A+">A+</option>
+              <option value="A-">A-</option>
+              <option value="B+">B+</option>
+              <option value="B-">B-</option>
+              <option value="AB+">AB+</option>
+              <option value="AB-">AB-</option>
+              <option value="O+">O+</option>
+              <option value="O-">O-</option>
+            </select>
           </div>
 
           <div className="field">
-            <label>Medical Notes (Optional)</label>
+            <label>Medical Notes</label>
+
             <textarea
               name="medicalNotes"
-              rows="2"
+              rows="3"
               value={formData.medicalNotes}
               onChange={handleChange}
               placeholder="Allergies, chronic conditions..."
@@ -159,6 +191,7 @@ function QuickAddPatientModal({ onClose, onPatientAdded }) {
             <button type="button" className="btn-cancel" onClick={onClose}>
               Cancel
             </button>
+
             <button type="submit" className="btn-save" disabled={isSubmitting}>
               {isSubmitting ? "Saving..." : "Add Patient"}
             </button>
@@ -169,7 +202,7 @@ function QuickAddPatientModal({ onClose, onPatientAdded }) {
   );
 }
 
-// ==================== Component: Check-In Modal ====================
+// ==================== Check In Modal ====================
 function CheckInModal({
   patients,
   doctors,
@@ -184,35 +217,64 @@ function CheckInModal({
     reason: "",
     status: "scheduled",
   });
+
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
     if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }));
+      setErrors((prev) => ({
+        ...prev,
+        [name]: "",
+      }));
     }
+  };
+
+  const getDefaultDateTime = () => {
+    const now = new Date();
+
+    now.setMinutes(now.getMinutes() + 30);
+
+    return now.toISOString().slice(0, 16);
   };
 
   const validate = () => {
     const newErrors = {};
-    if (!formData.patientId) newErrors.patientId = "Please select a patient";
-    if (!formData.doctorId) newErrors.doctorId = "Please select a doctor";
-    if (!formData.dateAndTime)
+
+    if (!formData.patientId) {
+      newErrors.patientId = "Please select a patient";
+    }
+
+    if (!formData.doctorId) {
+      newErrors.doctorId = "Please select a doctor";
+    }
+
+    if (!formData.dateAndTime) {
       newErrors.dateAndTime = "Please select date and time";
+    }
+
     return newErrors;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const validationErrors = validate();
+
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
     }
 
     setIsSubmitting(true);
+
     try {
       const data = {
         patientId: formData.patientId,
@@ -221,20 +283,17 @@ function CheckInModal({
         reason: formData.reason || "Reception check-in",
         status: formData.status,
       };
+
       await createAppointment(data);
+
       onCheckIn();
     } catch (err) {
       const msg = err.response?.data?.message || "Failed to check in";
+
       alert(msg);
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const getDefaultDateTime = () => {
-    const now = new Date();
-    now.setMinutes(now.getMinutes() + 30);
-    return now.toISOString().slice(0, 16);
   };
 
   return (
@@ -245,12 +304,18 @@ function CheckInModal({
             <i className="bi bi-calendar-check-fill me-2"></i>
             New Check-In
           </h2>
-          <button className="btn-close" onClick={onClose}></button>
+
+          <button
+            type="button"
+            className="btn-close"
+            onClick={onClose}
+          ></button>
         </div>
 
         <form onSubmit={handleSubmit}>
           <div className="field">
             <label>Patient *</label>
+
             <select
               name="patientId"
               value={formData.patientId}
@@ -258,12 +323,19 @@ function CheckInModal({
               className={errors.patientId ? "error" : ""}
             >
               <option value="">Select Patient</option>
-              {patients.map((p) => (
-                <option key={p._id || p.id} value={p._id || p.id}>
-                  {p.fullName || p.name} - {p.phone}
+
+              {patients.map((patient) => (
+                <option
+                  key={patient._id || patient.id}
+                  value={patient._id || patient.id}
+                >
+                  {patient.fullName || patient.name}
+                  {" - "}
+                  {patient.phone}
                 </option>
               ))}
             </select>
+
             {errors.patientId && (
               <span className="error-text">{errors.patientId}</span>
             )}
@@ -271,6 +343,7 @@ function CheckInModal({
 
           <div className="field">
             <label>Doctor *</label>
+
             <select
               name="doctorId"
               value={formData.doctorId}
@@ -278,13 +351,22 @@ function CheckInModal({
               className={errors.doctorId ? "error" : ""}
             >
               <option value="">Select Doctor</option>
-              {doctors.map((d) => (
-                <option key={d._id || d.id} value={d._id || d.id}>
-                  {d.userId?.name || d.userId?.fullname || d.name || "Doctor"}
-                  {d.specialization ? ` - ${d.specialization}` : ""}
+
+              {doctors.map((doctor) => (
+                <option
+                  key={doctor._id || doctor.id}
+                  value={doctor._id || doctor.id}
+                >
+                  {doctor.userId?.name ||
+                    doctor.userId?.fullname ||
+                    doctor.name ||
+                    "Doctor"}
+
+                  {doctor.specialization ? ` - ${doctor.specialization}` : ""}
                 </option>
               ))}
             </select>
+
             {errors.doctorId && (
               <span className="error-text">{errors.doctorId}</span>
             )}
@@ -293,6 +375,7 @@ function CheckInModal({
           <div className="form-row">
             <div className="field">
               <label>Date & Time *</label>
+
               <input
                 type="datetime-local"
                 name="dateAndTime"
@@ -300,6 +383,7 @@ function CheckInModal({
                 onChange={handleChange}
                 className={errors.dateAndTime ? "error" : ""}
               />
+
               {errors.dateAndTime && (
                 <span className="error-text">{errors.dateAndTime}</span>
               )}
@@ -307,6 +391,7 @@ function CheckInModal({
 
             <div className="field">
               <label>Status</label>
+
               <select
                 name="status"
                 value={formData.status}
@@ -320,9 +405,10 @@ function CheckInModal({
 
           <div className="field">
             <label>Reason for Visit</label>
+
             <textarea
               name="reason"
-              rows="2"
+              rows="3"
               value={formData.reason}
               onChange={handleChange}
               placeholder="Routine checkup, tooth pain..."
@@ -333,6 +419,7 @@ function CheckInModal({
             <button type="button" className="btn-cancel" onClick={onClose}>
               Cancel
             </button>
+
             <button type="submit" className="btn-save" disabled={isSubmitting}>
               {isSubmitting ? "Saving..." : "Confirm Check-In"}
             </button>
@@ -343,15 +430,17 @@ function CheckInModal({
   );
 }
 
-// ==================== Component: Search & Quick Actions ====================
+// ==================== Patient Search ====================
 function PatientSearchBar({ patients, onSelectPatient, onAddNew }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [showResults, setShowResults] = useState(false);
 
   const filteredPatients = searchTerm.trim()
-    ? patients.filter((p) => {
-        const name = (p.fullName || p.name || "").toLowerCase();
-        const phone = String(p.phone || "");
+    ? patients.filter((patient) => {
+        const name = (patient.fullName || patient.name || "").toLowerCase();
+
+        const phone = String(patient.phone || "");
+
         return (
           name.includes(searchTerm.toLowerCase()) || phone.includes(searchTerm)
         );
@@ -369,6 +458,7 @@ function PatientSearchBar({ patients, onSelectPatient, onAddNew }) {
       <div className="search-box-wrapper">
         <div className="search-input-group">
           <i className="bi bi-search"></i>
+
           <input
             type="text"
             placeholder="Search patient by name or phone number..."
@@ -379,8 +469,10 @@ function PatientSearchBar({ patients, onSelectPatient, onAddNew }) {
             }}
             onFocus={() => setShowResults(true)}
           />
+
           {searchTerm && (
             <button
+              type="button"
               className="clear-btn"
               onClick={() => {
                 setSearchTerm("");
@@ -395,26 +487,34 @@ function PatientSearchBar({ patients, onSelectPatient, onAddNew }) {
         {showResults && searchTerm.trim() && (
           <div className="search-results-dropdown">
             {filteredPatients.length > 0 ? (
-              filteredPatients.map((p) => (
+              filteredPatients.map((patient) => (
                 <div
-                  key={p._id || p.id}
+                  key={patient._id || patient.id}
                   className="search-result-item"
-                  onClick={() => handleSelect(p)}
+                  onClick={() => handleSelect(patient)}
                 >
                   <div className="patient-avatar">
                     <i className="bi bi-person-fill"></i>
                   </div>
+
                   <div className="patient-info">
-                    <strong>{p.fullName || p.name}</strong>
-                    <small>{p.phone}</small>
+                    <strong>{patient.fullName || patient.name}</strong>
+
+                    <small>{patient.phone}</small>
                   </div>
+
                   <i className="bi bi-chevron-left"></i>
                 </div>
               ))
             ) : (
               <div className="no-results">
                 <p>No patient found with this name or phone number</p>
-                <button className="btn-add-patient" onClick={onAddNew}>
+
+                <button
+                  type="button"
+                  className="btn-add-patient"
+                  onClick={onAddNew}
+                >
                   <i className="bi bi-person-plus-fill me-2"></i>
                   Add New Patient
                 </button>
@@ -425,11 +525,13 @@ function PatientSearchBar({ patients, onSelectPatient, onAddNew }) {
       </div>
 
       <div className="quick-actions">
-        <button className="btn-quick-add" onClick={onAddNew}>
+        <button type="button" className="btn-quick-add" onClick={onAddNew}>
           <i className="bi bi-person-plus-fill"></i>
           New Patient
         </button>
+
         <button
+          type="button"
           className="btn-quick-checkin"
           onClick={() => onSelectPatient(null)}
         >
@@ -441,42 +543,48 @@ function PatientSearchBar({ patients, onSelectPatient, onAddNew }) {
   );
 }
 
-// ==================== Main Component: Reception ====================
+// ==================== Main Reception ====================
 export default function Reception() {
-  const navigate = useNavigate();
-
   const [appointments, setAppointments] = useState([]);
   const [patients, setPatients] = useState([]);
   const [doctors, setDoctors] = useState([]);
+
   const [isLoading, setIsLoading] = useState(true);
 
   const [showCheckInModal, setShowCheckInModal] = useState(false);
+
   const [showAddPatientModal, setShowAddPatientModal] = useState(false);
+
   const [preSelectedPatient, setPreSelectedPatient] = useState(null);
+
   const [activeMenu, setActiveMenu] = useState(null);
 
   const [statusFilter, setStatusFilter] = useState("All");
 
   const fetchAllData = useCallback(async () => {
     setIsLoading(true);
-    try {
-      const [apptRes, patRes, docRes] = await Promise.allSettled([
-        getAppointments(),
-        getPatients(),
-        getDoctors(),
-      ]);
 
-      if (apptRes.status === "fulfilled") {
-        setAppointments(apptRes.value.data?.data || []);
+    try {
+      const [appointmentsRes, patientsRes, doctorsRes] =
+        await Promise.allSettled([
+          getAppointments(),
+          getPatients(),
+          getDoctors(),
+        ]);
+
+      if (appointmentsRes.status === "fulfilled") {
+        setAppointments(appointmentsRes.value.data?.data || []);
       }
-      if (patRes.status === "fulfilled") {
-        setPatients(patRes.value.data?.data || []);
+
+      if (patientsRes.status === "fulfilled") {
+        setPatients(patientsRes.value.data?.data || []);
       }
-      if (docRes.status === "fulfilled") {
-        setDoctors(docRes.value.data?.data || []);
+
+      if (doctorsRes.status === "fulfilled") {
+        setDoctors(doctorsRes.value.data?.data || []);
       }
-    } catch (err) {
-      console.error("Error fetching data:", err);
+    } catch (error) {
+      console.error("Error fetching reception data:", error);
     } finally {
       setIsLoading(false);
     }
@@ -488,16 +596,19 @@ export default function Reception() {
 
   const getPatientName = (patientId) => {
     const patient = patients.find((p) => (p._id || p.id) === patientId);
+
     return patient?.fullName || patient?.name || "Deleted Patient";
   };
 
   const getPatientPhone = (patientId) => {
     const patient = patients.find((p) => (p._id || p.id) === patientId);
+
     return patient?.phone || "-";
   };
 
   const getDoctorName = (doctorId) => {
     const doctor = doctors.find((d) => (d._id || d.id) === doctorId);
+
     return (
       doctor?.userId?.name ||
       doctor?.userId?.fullname ||
@@ -508,6 +619,7 @@ export default function Reception() {
 
   const formatTime = (dateString) => {
     if (!dateString) return "-";
+
     try {
       return new Date(dateString).toLocaleTimeString("en-US", {
         hour: "2-digit",
@@ -520,6 +632,7 @@ export default function Reception() {
 
   const formatDate = (dateString) => {
     if (!dateString) return "-";
+
     try {
       return new Date(dateString).toLocaleDateString("en-US");
     } catch {
@@ -528,38 +641,49 @@ export default function Reception() {
   };
 
   const todayStr = new Date().toDateString();
-  const todayAppointments = appointments.filter((a) => {
-    if (!a.dateAndTime) return false;
-    return new Date(a.dateAndTime).toDateString() === todayStr;
+
+  const todayAppointments = appointments.filter((appointment) => {
+    if (!appointment.dateAndTime) return false;
+
+    return new Date(appointment.dateAndTime).toDateString() === todayStr;
   });
 
   const stats = {
     total: todayAppointments.length,
-    waiting: todayAppointments.filter((a) => a.status === "scheduled").length,
-    inProgress: todayAppointments.filter(
-      (a) => a.status === "in-progress" || a.status === "inProgress",
+
+    waiting: todayAppointments.filter(
+      (appointment) => appointment.status === "scheduled",
     ).length,
-    completed: todayAppointments.filter((a) => a.status === "completed").length,
+
+    inProgress: todayAppointments.filter(
+      (appointment) =>
+        appointment.status === "in-progress" ||
+        appointment.status === "inProgress",
+    ).length,
+
+    completed: todayAppointments.filter(
+      (appointment) => appointment.status === "completed",
+    ).length,
+
     doctorsAvailable: doctors.length,
   };
 
   const handleSelectPatient = (patient) => {
-    if (patient) {
-      setPreSelectedPatient(patient);
-    } else {
-      setPreSelectedPatient(null);
-    }
+    setPreSelectedPatient(patient || null);
     setShowCheckInModal(true);
   };
 
   const handlePatientAdded = async (newPatient) => {
     setShowAddPatientModal(false);
+
     try {
       const res = await getPatients();
+
       setPatients(res.data?.data || []);
-    } catch (err) {
-      console.error("Error refreshing patients:", err);
+    } catch (error) {
+      console.error("Error refreshing patients:", error);
     }
+
     setPreSelectedPatient(newPatient);
     setShowCheckInModal(true);
   };
@@ -567,45 +691,60 @@ export default function Reception() {
   const handleCheckInComplete = async () => {
     setShowCheckInModal(false);
     setPreSelectedPatient(null);
+
     await fetchAllData();
   };
 
   const updateStatus = async (appointmentId, newStatus) => {
     try {
       await updateAppointment(appointmentId, { status: newStatus });
+
       setAppointments((prev) =>
-        prev.map((a) =>
-          (a.id || a._id) === appointmentId ? { ...a, status: newStatus } : a,
+        prev.map((appointment) =>
+          (appointment.id || appointment._id) === appointmentId
+            ? {
+                ...appointment,
+                status: newStatus,
+              }
+            : appointment,
         ),
       );
+
       setActiveMenu(null);
-    } catch (err) {
-      console.error(err);
-      alert(err.response?.data?.message || "Failed to update status");
+    } catch (error) {
+      console.error(error);
+
+      alert(error.response?.data?.message || "Failed to update status");
     }
   };
 
   const handleDelete = async (appointmentId) => {
-    if (!window.confirm("Are you sure you want to delete this appointment?"))
+    if (!window.confirm("Are you sure you want to delete this appointment?")) {
       return;
+    }
 
     try {
       await deleteAppointment(appointmentId);
+
       await fetchAllData();
-    } catch (err) {
-      console.error(err);
-      alert(err.response?.data?.message || "Failed to delete appointment");
+    } catch (error) {
+      console.error(error);
+
+      alert(error.response?.data?.message || "Failed to delete appointment");
     }
   };
 
-  const filteredAppointments = appointments.filter((a) => {
-    if (statusFilter === "All") return true;
-    return a.status === statusFilter;
+  const filteredAppointments = appointments.filter((appointment) => {
+    if (statusFilter === "All") {
+      return true;
+    }
+
+    return appointment.status === statusFilter;
   });
 
-  const sortedAppointments = [...filteredAppointments].sort((a, b) => {
-    return new Date(b.dateAndTime) - new Date(a.dateAndTime);
-  });
+  const sortedAppointments = [...filteredAppointments].sort(
+    (a, b) => new Date(b.dateAndTime) - new Date(a.dateAndTime),
+  );
 
   const statusConfig = {
     scheduled: {
@@ -613,22 +752,31 @@ export default function Reception() {
       class: "waiting",
       icon: "bi-hourglass-split",
     },
+
     "in-progress": {
       label: "In Progress",
       class: "in-progress",
       icon: "bi-arrow-repeat",
     },
+
     inProgress: {
       label: "In Progress",
       class: "in-progress",
       icon: "bi-arrow-repeat",
     },
+
     completed: {
       label: "Completed",
       class: "completed",
       icon: "bi-check-circle",
     },
-    cancelled: { label: "Cancelled", class: "cancelled", icon: "bi-x-circle" },
+
+    cancelled: {
+      label: "Cancelled",
+      class: "cancelled",
+      icon: "bi-x-circle",
+    },
+
     missed: {
       label: "Missed",
       class: "missed",
@@ -639,7 +787,7 @@ export default function Reception() {
   const getStatusInfo = (status) => {
     return (
       statusConfig[status] || {
-        label: status,
+        label: status || "Unknown",
         class: "waiting",
         icon: "bi-question-circle",
       }
@@ -650,8 +798,10 @@ export default function Reception() {
     return (
       <div className="reception-page">
         <PageHeader />
+
         <div className="loading-container">
           <div className="spinner-border text-primary" role="status"></div>
+
           <p>Loading reception data...</p>
         </div>
       </div>
@@ -662,14 +812,17 @@ export default function Reception() {
     <div className="reception-page">
       <PageHeader />
 
+      {/* ==================== Stats ==================== */}
       <div className="stats-container">
         <div className="stat-card">
           <div className="icon-box blue-card">
             <i className="bi bi-calendar-event-fill"></i>
           </div>
+
           <div className="stat-info">
             <span>Today's Appointments</span>
             <h3>{stats.total}</h3>
+
             <Link to="/appointments" className="stat-link">
               View All
             </Link>
@@ -680,6 +833,7 @@ export default function Reception() {
           <div className="icon-box yellow-card">
             <i className="bi bi-hourglass-split"></i>
           </div>
+
           <div className="stat-info">
             <span>Waiting</span>
             <h3>{stats.waiting}</h3>
@@ -691,6 +845,7 @@ export default function Reception() {
           <div className="icon-box orange-card">
             <i className="bi bi-arrow-repeat"></i>
           </div>
+
           <div className="stat-info">
             <span>In Progress</span>
             <h3>{stats.inProgress}</h3>
@@ -702,6 +857,7 @@ export default function Reception() {
           <div className="icon-box green-card">
             <i className="bi bi-check-circle-fill"></i>
           </div>
+
           <div className="stat-info">
             <span>Completed Today</span>
             <h3>{stats.completed}</h3>
@@ -713,49 +869,67 @@ export default function Reception() {
           <div className="icon-box purple-card">
             <i className="bi bi-person-badge-fill"></i>
           </div>
+
           <div className="stat-info">
             <span>Available Doctors</span>
             <h3>{stats.doctorsAvailable}</h3>
-            <Link to="/doctors" className="stat-link">
+
+            <Link to="/settings/doctors" className="stat-link">
               View Doctors
             </Link>
           </div>
         </div>
       </div>
 
+      {/* ==================== Patient Search ==================== */}
       <PatientSearchBar
         patients={patients}
         onSelectPatient={handleSelectPatient}
         onAddNew={() => setShowAddPatientModal(true)}
       />
 
+      {/* ==================== Queue ==================== */}
       <div className="queue-section">
         <div className="section-header">
           <h3>
             <i className="bi bi-list-check me-2"></i>
             Queue
           </h3>
+
           <div className="queue-filters">
             <button
+              type="button"
               className={`filter-btn ${statusFilter === "All" ? "active" : ""}`}
               onClick={() => setStatusFilter("All")}
             >
               All ({appointments.length})
             </button>
+
             <button
-              className={`filter-btn ${statusFilter === "scheduled" ? "active" : ""}`}
+              type="button"
+              className={`filter-btn ${
+                statusFilter === "scheduled" ? "active" : ""
+              }`}
               onClick={() => setStatusFilter("scheduled")}
             >
               Waiting ({stats.waiting})
             </button>
+
             <button
-              className={`filter-btn ${statusFilter === "in-progress" ? "active" : ""}`}
+              type="button"
+              className={`filter-btn ${
+                statusFilter === "in-progress" ? "active" : ""
+              }`}
               onClick={() => setStatusFilter("in-progress")}
             >
               In Progress ({stats.inProgress})
             </button>
+
             <button
-              className={`filter-btn ${statusFilter === "completed" ? "active" : ""}`}
+              type="button"
+              className={`filter-btn ${
+                statusFilter === "completed" ? "active" : ""
+              }`}
               onClick={() => setStatusFilter("completed")}
             >
               Completed ({stats.completed})
@@ -776,52 +950,66 @@ export default function Reception() {
                 <th>Actions</th>
               </tr>
             </thead>
+
             <tbody>
               {sortedAppointments.length > 0 ? (
                 sortedAppointments.map((appointment, index) => {
                   const appointmentId = appointment.id || appointment._id;
+
                   const statusInfo = getStatusInfo(appointment.status);
+
                   return (
                     <tr key={appointmentId}>
                       <td>
                         <span className="queue-number">{index + 1}</span>
                       </td>
+
                       <td>
                         <div className="patient-cell">
                           <div className="patient-avatar">
                             <i className="bi bi-person-fill"></i>
                           </div>
+
                           <div>
                             <strong>
                               {getPatientName(appointment.patientId)}
                             </strong>
+
                             <small>
                               {appointment.reason || "General checkup"}
                             </small>
                           </div>
                         </div>
                       </td>
+
                       <td>{getPatientPhone(appointment.patientId)}</td>
+
                       <td>
                         <span className="doctor-name">
                           {getDoctorName(appointment.doctorId)}
                         </span>
                       </td>
+
                       <td>
                         <div className="time-cell">
                           <strong>{formatDate(appointment.dateAndTime)}</strong>
+
                           <small>{formatTime(appointment.dateAndTime)}</small>
                         </div>
                       </td>
+
                       <td>
                         <span className={`status-badge ${statusInfo.class}`}>
                           <i className={`bi ${statusInfo.icon} me-1`}></i>
+
                           {statusInfo.label}
                         </span>
                       </td>
+
                       <td>
                         <div className="actions-cell">
                           <button
+                            type="button"
                             className="btn-action"
                             title="Change Status"
                             onClick={() =>
@@ -834,7 +1022,9 @@ export default function Reception() {
                           >
                             <i className="bi bi-three-dots-vertical"></i>
                           </button>
+
                           <button
+                            type="button"
                             className="btn-action delete"
                             title="Delete"
                             onClick={() => handleDelete(appointmentId)}
@@ -852,6 +1042,7 @@ export default function Reception() {
                                 <i className="bi bi-hourglass-split me-2"></i>
                                 Waiting
                               </div>
+
                               <div
                                 onClick={() =>
                                   updateStatus(appointmentId, "in-progress")
@@ -860,6 +1051,7 @@ export default function Reception() {
                                 <i className="bi bi-arrow-repeat me-2"></i>
                                 In Progress
                               </div>
+
                               <div
                                 onClick={() =>
                                   updateStatus(appointmentId, "completed")
@@ -868,6 +1060,7 @@ export default function Reception() {
                                 <i className="bi bi-check-circle me-2"></i>
                                 Completed
                               </div>
+
                               <div
                                 onClick={() =>
                                   updateStatus(appointmentId, "cancelled")
@@ -886,19 +1079,19 @@ export default function Reception() {
               ) : (
                 <tr>
                   <td colSpan="7" className="empty-state">
-                    <i
-                      className="bi bi-calendar-x"
-                      style={{ fontSize: "3rem", color: "#ccc" }}
-                    ></i>
+                    <i className="bi bi-calendar-x empty-icon"></i>
+
                     <p>
                       No appointments{" "}
                       {statusFilter !== "All" ? "with this status" : "today"}
                     </p>
+
                     <button
+                      type="button"
                       className="btn-quick-checkin"
                       onClick={() => setShowCheckInModal(true)}
                     >
-                      <i className="bi bi-plus-lg me-2"></i>
+                      <i className="bi bi-plus-lg"></i>
                       New Check-In
                     </button>
                   </td>
@@ -909,6 +1102,7 @@ export default function Reception() {
         </div>
       </div>
 
+      {/* ==================== Modals ==================== */}
       {showAddPatientModal && (
         <QuickAddPatientModal
           onClose={() => setShowAddPatientModal(false)}
