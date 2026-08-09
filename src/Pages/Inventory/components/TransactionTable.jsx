@@ -1,63 +1,109 @@
 const typeMeta = {
-  in: { label: "دخول", badge: "bg-success" },
-  out: { label: "خروج", badge: "bg-warning text-dark" },
-  adjustment: { label: "جرد", badge: "bg-secondary" },
-  expired: { label: "منتهي", badge: "bg-danger" },
+  in: {
+    label: "Stock In",
+    className: "transaction-in",
+  },
+
+  out: {
+    label: "Stock Out",
+    className: "transaction-out",
+  },
+
+  adjustment: {
+    label: "Adjustment",
+    className: "transaction-adjustment",
+  },
+
+  expired: {
+    label: "Expired",
+    className: "transaction-expired",
+  },
 };
 
 export default function TransactionTable({ transactions, loading }) {
   const txArray = Array.isArray(transactions) ? transactions : [];
 
   return (
-    <div className="card">
-      <div className="table-responsive">
-        <table className="table table-hover align-middle mb-0">
-          <thead className="table-light">
+    <div className="inventory-table-card">
+      {" "}
+      <div className="inventory-table-wrapper">
+        {" "}
+        <table className="inventory-table transaction-table">
+          {" "}
+          <thead>
+            {" "}
             <tr>
-              <th>التاريخ</th>
-              <th>الصنف</th>
-              <th>النوع</th>
-              <th>الكمية</th>
-              <th>قبل</th>
-              <th>بعد</th>
-              <th>ملاحظات</th>
-            </tr>
+              {" "}
+              <th>Date</th> <th>Item</th> <th>Type</th> <th>Quantity</th>{" "}
+              <th>Before</th> <th>After</th> <th>Notes</th>{" "}
+            </tr>{" "}
           </thead>
-
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={7} className="text-center py-4">
-                  <div className="spinner-border text-primary" role="status" />
+                <td colSpan={7} className="inventory-loading">
+                  <div
+                    className="spinner-border text-primary"
+                    role="status"
+                  ></div>
                 </td>
               </tr>
             ) : txArray.length === 0 ? (
               <tr>
-                <td colSpan={7} className="text-center py-4 text-muted">
-                  لا توجد حركات
+                <td colSpan={7} className="inventory-empty">
+                  <i className="bi bi-arrow-left-right"></i>
+
+                  <div>No transactions found</div>
                 </td>
               </tr>
             ) : (
-              txArray.map((tx) => (
-                <tr key={tx._id}>
-                  <td>{new Date(tx.createdAt).toLocaleDateString("ar-EG")}</td>
+              txArray.map((tx) => {
+                const meta = typeMeta[tx.type] || {
+                  label: tx.type || "Unknown",
+                  className: "transaction-default",
+                };
 
-                  <td>{tx.inventoryItemId?.name || "-"}</td>
+                return (
+                  <tr key={tx._id}>
+                    {/* Date */}
+                    <td>
+                      {tx.createdAt
+                        ? new Date(tx.createdAt).toLocaleDateString("en-GB")
+                        : "-"}
+                    </td>
 
-                  <td>
-                    <span
-                      className={`badge ${typeMeta[tx.type]?.badge || "bg-light text-dark"}`}
-                    >
-                      {typeMeta[tx.type]?.label || tx.type}
-                    </span>
-                  </td>
+                    {/* Item */}
+                    <td>
+                      <span className="inventory-item-name">
+                        {tx.inventoryItemId?.name ||
+                          tx.inventoryItem?.name ||
+                          "-"}
+                      </span>
+                    </td>
 
-                  <td>{tx.quantity}</td>
-                  <td>{tx.quantityBefore ?? "-"}</td>
-                  <td>{tx.quantityAfter ?? "-"}</td>
-                  <td>{tx.notes || "-"}</td>
-                </tr>
-              ))
+                    {/* Type */}
+                    <td>
+                      <span className={`transaction-badge ${meta.className}`}>
+                        {meta.label}
+                      </span>
+                    </td>
+
+                    {/* Quantity */}
+                    <td>{tx.quantity ?? "-"}</td>
+
+                    {/* Before */}
+                    <td>{tx.quantityBefore ?? "-"}</td>
+
+                    {/* After */}
+                    <td>{tx.quantityAfter ?? "-"}</td>
+
+                    {/* Notes */}
+                    <td className="transaction-notes-cell">
+                      {tx.notes || "-"}
+                    </td>
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>

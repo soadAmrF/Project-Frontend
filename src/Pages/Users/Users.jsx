@@ -1,19 +1,18 @@
 import { useEffect, useState } from "react";
-import { useOutletContext } from "react-router-dom";
-import "./users.css";
-
-import SearchBar from "./components/SearchBar";
-import UserStats from "./components/UserStats";
-import UserTable from "./components/UserTable";
-import UserModal from "./components/UserModal";
-
-
+import { Link } from "react-router-dom";
 import {
   getUsers,
   createUser,
   updateUser,
   deleteUser,
 } from "../../services/api";
+
+import SearchBar from "./components/SearchBar";
+import UserStats from "./components/UserStats";
+import UserTable from "./components/UserTable";
+import UserModal from "./components/UserModal";
+
+import "./users.css";
 
 const Users = () => {
   const [users, setUsers] = useState([]);
@@ -101,42 +100,54 @@ const Users = () => {
     );
   });
 
-  const { searchQuery } = useOutletContext();
-
-
   return (
-    <div className="container-fluid users-page">
-      <div className=" d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
-        <h2 className="fw-bold mb-0">User Management</h2>
+    <div className="users-page">
+      {/* Page Header */}
+      <div className="page-header">
+        <div className="users-page-header">
+          <div>
+            <h1>Users</h1>
+
+            <nav>
+              <ol className="breadcrumb">
+                <li className="breadcrumb-item">
+                  <Link to="/dashboard">Home</Link>
+                </li>
+
+                <li className="breadcrumb-item">
+                  <Link to="/settings">Settings</Link>
+                </li>
+
+                <li className="breadcrumb-item active">Users</li>
+              </ol>
+            </nav>
+          </div>
+
+        </div>
 
         {isAdmin && (
-          <button className="btn btn-primary" onClick={handleAdd}>
-            <i
-              className="
-                bi bi-plus-circle me-2
-              "
-            ></i>
+          <button className="add-user-btn" onClick={handleAdd}>
+            <i className="bi bi-plus-lg"></i>
             Add User
           </button>
         )}
       </div>
 
+      {/* Error */}
       {errorMessage && (
         <div className="alert alert-danger">
-          <i
-            className="
-              bi bi-exclamation-triangle me-2
-            "
-          ></i>
-
+          <i className="bi bi-exclamation-triangle me-2"></i>
           {errorMessage}
         </div>
       )}
 
+      {/* Stats */}
       <UserStats users={users} />
 
+      {/* Search */}
       <SearchBar search={search} setSearch={setSearch} />
 
+      {/* Table */}
       <UserTable
         users={filteredUsers}
         onEdit={handleEdit}
@@ -144,6 +155,7 @@ const Users = () => {
         isAdmin={isAdmin}
       />
 
+      {/* Modal */}
       {showModal && (
         <UserModal
           user={editingUser}

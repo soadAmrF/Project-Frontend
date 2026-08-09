@@ -5,68 +5,70 @@ export default function SearchBar({
   filters,
   setFilters,
 }) {
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      onSearch();
+    }
+  };
+
   return (
-    <div className="card mb-4">
-      <div className="card-body">
-        <div className="row g-3 align-items-center">
-          <div className="col-md-4">
-            <input
-              className="form-control"
-              placeholder="ابحث بالاسم..."
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") onSearch();
-              }}
-            />
-          </div>
+    <div className="inventory-search-card">
+      <div className="inventory-search-row">
+        {/* Search */}
+        <div className="inventory-search-input-wrapper">
+          <i className="bi bi-search"></i>
 
-          <div className="col-auto">
-            <button className="btn btn-outline-primary" onClick={onSearch}>
-              بحث
-            </button>
-          </div>
-
-          <div className="col-auto">
-            <div className="form-check">
-              <input
-                className="form-check-input"
-                type="checkbox"
-                id="lowStockFilter"
-                checked={filters.lowStock}
-                onChange={(e) =>
-                  setFilters((prev) => ({
-                    ...prev,
-                    lowStock: e.target.checked,
-                  }))
-                }
-              />
-              <label className="form-check-label" htmlFor="lowStockFilter">
-                الناقص فقط
-              </label>
-            </div>
-          </div>
-
-          <div className="col-auto">
-            <div className="form-check">
-              <input
-                className="form-check-input"
-                type="checkbox"
-                id="expiredFilter"
-                checked={filters.expired}
-                onChange={(e) =>
-                  setFilters((prev) => ({
-                    ...prev,
-                    expired: e.target.checked,
-                  }))
-                }
-              />
-              <label className="form-check-label" htmlFor="expiredFilter">
-                المنتهي فقط
-              </label>
-            </div>
-          </div>
+          <input
+            type="text"
+            className="inventory-search-input"
+            placeholder="Search by item name..."
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+          />
         </div>
+
+        {/* Search Button */}
+        <button
+          type="button"
+          className="inventory-search-btn"
+          onClick={onSearch}
+        >
+          <i className="bi bi-search me-1"></i>
+          Search
+        </button>
+
+        {/* Low Stock */}
+        <label className="inventory-filter">
+          <input
+            type="checkbox"
+            checked={filters.lowStock}
+            onChange={(e) =>
+              setFilters((prev) => ({
+                ...prev,
+                lowStock: e.target.checked,
+              }))
+            }
+          />
+
+          <span>Low Stock</span>
+        </label>
+
+        {/* Expired */}
+        <label className="inventory-filter">
+          <input
+            type="checkbox"
+            checked={filters.expired}
+            onChange={(e) =>
+              setFilters((prev) => ({
+                ...prev,
+                expired: e.target.checked,
+              }))
+            }
+          />
+
+          <span>Expired</span>
+        </label>
       </div>
     </div>
   );

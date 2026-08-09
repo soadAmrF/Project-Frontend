@@ -56,7 +56,6 @@ export default function AddDoctorModal({ onClose, fetchDoctors }) {
     });
   };
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -74,171 +73,227 @@ export default function AddDoctorModal({ onClose, fetchDoctors }) {
   };
 
   const days = [
-  "Saturday",
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-];
-
+    "Saturday",
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+  ];
 
   return (
-    <div className="modal-overlay">
-      <form className="modal-card" onSubmit={handleSubmit}>
-        <h3 className="mb-4">Add Doctor</h3>
+    <div className="doctor-modal-overlay">
+      <div className="doctor-modal-card">
+        <div className="doctor-modal-header">
+          <div className="doctor-modal-title">
+            <div className="doctor-modal-icon">
+              <i className="bi bi-person-plus"></i>
+            </div>
 
-        <div className="mb-3">
-          <label>Doctor</label>
+            <div>
+              <h3>Add Doctor</h3>
+              <p>Add a new doctor to the clinic</p>
+            </div>
+          </div>
 
-          <select
-            className="form-select"
-            name="userId"
-            value={formData.userId}
-            onChange={handleChange}
+          <button
+            type="button"
+            className="doctor-modal-close"
+            onClick={onClose}
           >
-            <option value="">Select Doctor</option>
-
-            {doctorsUsers.map((user) => (
-              <option key={user._id} value={user._id}>
-                {user.fullname}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="mb-3">
-          <label>Specialization</label>
-          <input
-            className="form-control"
-            name="specialization"
-            value={formData.specialization}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div className="mb-3">
-          <label>Experience Years</label>
-          <input
-            className="form-control"
-            type="number"
-            name="experienceYears"
-            value={formData.experienceYears}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div className="mb-3">
-          <label>Degree</label>
-          <input
-            className="form-control"
-            name="degree"
-            value={formData.degree}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div className="mb-3">
-          <label>Fees</label>
-          <input
-            className="form-control"
-            type="number"
-            name="fees"
-            value={formData.fees}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div className="mb-3">
-          <label className="form-label">Working Days</label>
-
-          <div className="working-days">
-            {days.map((day) => (
-              <label key={day} className="day-item">
-                <input
-                  type="checkbox"
-                  checked={formData.workingDays.includes(day)}
-                  onChange={(e) => {
-                    if (e.target.checked) {
-                      setFormData({
-                        ...formData,
-                        workingDays: [...formData.workingDays, day],
-                      });
-                    } else {
-                      setFormData({
-                        ...formData,
-                        workingDays: formData.workingDays.filter(
-                          (item) => item !== day,
-                        ),
-                      });
-                    }
-                  }}
-                />
-
-                <span>{day}</span>
-              </label>
-            ))}
-          </div>
-        </div>
-
-        <div className="row">
-          <div className="col">
-            <label>Start</label>
-
-            <input
-              type="time"
-              className="form-control"
-              name="start"
-              value={formData.workingHours.start}
-              onChange={handleTimeChange}
-            />
-          </div>
-
-          <div className="col">
-            <label>End</label>
-
-            <input
-              type="time"
-              className="form-control"
-              name="end"
-              value={formData.workingHours.end}
-              onChange={handleTimeChange}
-            />
-          </div>
-        </div>
-
-        <div className="my-3">
-          <label>Address</label>
-
-          <input
-            className="form-control"
-            name="address"
-            value={formData.address}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div className="mb-3">
-          <label>Bio</label>
-
-          <textarea
-            rows="4"
-            className="form-control"
-            name="bio"
-            value={formData.bio}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div className="d-flex justify-content-end gap-2 mt-4">
-          <button type="button" className="btn btn-light" onClick={onClose}>
-            Cancel
+            <i className="bi bi-x-lg"></i>
           </button>
-
-          <button className="btn btn-primary">Save</button>
         </div>
-      </form>
+
+        <form onSubmit={handleSubmit} className="doctor-modal-form">
+          <div className="doctor-modal-body">
+            <div className="doctor-form-section">
+              <div className="doctor-section-title">
+                <i className="bi bi-person"></i>
+                <span>Doctor Information</span>
+              </div>
+
+              <div className="doctor-form-grid">
+                <div className="doctor-form-group full">
+                  <label>Doctor</label>
+
+                  <select
+                    className="doctor-form-control"
+                    name="userId"
+                    value={formData.userId}
+                    onChange={handleChange}
+                  >
+                    <option value="">Select Doctor</option>
+
+                    {doctorsUsers.map((user) => (
+                      <option key={user._id} value={user._id}>
+                        {user.fullname}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="doctor-form-group">
+                  <label>Specialization</label>
+
+                  <input
+                    className="doctor-form-control"
+                    name="specialization"
+                    value={formData.specialization}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div className="doctor-form-group">
+                  <label>Experience Years</label>
+
+                  <input
+                    className="doctor-form-control"
+                    type="number"
+                    name="experienceYears"
+                    value={formData.experienceYears}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div className="doctor-form-group">
+                  <label>Degree</label>
+
+                  <input
+                    className="doctor-form-control"
+                    name="degree"
+                    value={formData.degree}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div className="doctor-form-group">
+                  <label>Fees</label>
+
+                  <input
+                    className="doctor-form-control"
+                    type="number"
+                    name="fees"
+                    value={formData.fees}
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="doctor-form-section">
+              <div className="doctor-section-title">
+                <i className="bi bi-calendar-week"></i>
+                <span>Working Schedule</span>
+              </div>
+
+              <div className="doctor-form-group">
+                <label>Working Days</label>
+
+                <div className="working-days">
+                  {days.map((day) => (
+                    <label key={day} className="day-item">
+                      <input
+                        type="checkbox"
+                        checked={formData.workingDays.includes(day)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setFormData({
+                              ...formData,
+                              workingDays: [...formData.workingDays, day],
+                            });
+                          } else {
+                            setFormData({
+                              ...formData,
+                              workingDays: formData.workingDays.filter(
+                                (item) => item !== day,
+                              ),
+                            });
+                          }
+                        }}
+                      />
+
+                      <span>{day}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div className="doctor-time-grid">
+                <div className="doctor-form-group">
+                  <label>Start Time</label>
+
+                  <input
+                    type="time"
+                    className="doctor-form-control"
+                    name="start"
+                    value={formData.workingHours.start}
+                    onChange={handleTimeChange}
+                  />
+                </div>
+
+                <div className="doctor-form-group">
+                  <label>End Time</label>
+
+                  <input
+                    type="time"
+                    className="doctor-form-control"
+                    name="end"
+                    value={formData.workingHours.end}
+                    onChange={handleTimeChange}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="doctor-form-section">
+              <div className="doctor-section-title">
+                <i className="bi bi-geo-alt"></i>
+                <span>Additional Information</span>
+              </div>
+
+              <div className="doctor-form-group">
+                <label>Address</label>
+
+                <input
+                  className="doctor-form-control"
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="doctor-form-group">
+                <label>Bio</label>
+
+                <textarea
+                  rows="4"
+                  className="doctor-form-control doctor-textarea"
+                  name="bio"
+                  value={formData.bio}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="doctor-modal-footer">
+            <button
+              type="button"
+              className="doctor-cancel-btn"
+              onClick={onClose}
+            >
+              Cancel
+            </button>
+
+            <button type="submit" className="doctor-save-btn">
+              <i className="bi bi-check-lg"></i>
+              Save Doctor
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

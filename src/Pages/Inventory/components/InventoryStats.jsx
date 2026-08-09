@@ -2,39 +2,50 @@ export default function InventoryStats({ items }) {
   const itemsArray = Array.isArray(items) ? items : [];
 
   const lowCount = itemsArray.filter(
-    (item) => item.quantity <= item.reorderLevel,
+    (item) => Number(item.quantity || 0) <= Number(item.reorderLevel || 0),
   ).length;
 
-  const expiredCount = itemsArray.filter(
-    (item) => item.expiryDate && new Date(item.expiryDate) <= new Date(),
-  ).length;
+  const expiredCount = itemsArray.filter((item) => {
+    if (!item.expiryDate) return false;
+
+    return new Date(item.expiryDate) <= new Date();
+  }).length;
 
   return (
-    <div className="row g-3 mb-4">
-      <div className="col-md-4">
-        <div className="card stat-card h-100 border-primary">
-          <div className="card-body">
-            <h6 className="text-muted mb-1">إجمالي الأصناف</h6>
-            <h3 className="mb-0 text-primary">{itemsArray.length}</h3>
-          </div>
+    <div className="inventory-stats">
+      {/* Total Items */}
+      <div className="inventory-stat-card">
+        <div className="inventory-stat-icon blue">
+          <i className="bi bi-box-seam"></i>
+        </div>
+
+        <div className="inventory-stat-content">
+          <span>Total Items</span>
+          <strong>{itemsArray.length}</strong>
         </div>
       </div>
 
-      <div className="col-md-4">
-        <div className="card stat-card h-100 border-warning">
-          <div className="card-body">
-            <h6 className="text-muted mb-1">أصناف قرب تخلص</h6>
-            <h3 className="mb-0 text-warning">{lowCount}</h3>
-          </div>
+      {/* Low Stock */}
+      <div className="inventory-stat-card">
+        <div className="inventory-stat-icon orange">
+          <i className="bi bi-exclamation-triangle"></i>
+        </div>
+
+        <div className="inventory-stat-content">
+          <span>Low Stock</span>
+          <strong>{lowCount}</strong>
         </div>
       </div>
 
-      <div className="col-md-4">
-        <div className="card stat-card h-100 border-danger">
-          <div className="card-body">
-            <h6 className="text-muted mb-1">أصناف منتهية الصلاحية</h6>
-            <h3 className="mb-0 text-danger">{expiredCount}</h3>
-          </div>
+      {/* Expired */}
+      <div className="inventory-stat-card">
+        <div className="inventory-stat-icon red">
+          <i className="bi bi-calendar-x"></i>
+        </div>
+
+        <div className="inventory-stat-content">
+          <span>Expired Items</span>
+          <strong>{expiredCount}</strong>
         </div>
       </div>
     </div>

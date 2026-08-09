@@ -1,11 +1,11 @@
 export default function DoctorTable({ doctors }) {
   return (
-    <div className="table-responsive">
-      <table className="table align-middle">
+    <div className="doctor-table-responsive">
+      <table className="doctor-table">
         <thead>
           <tr>
             <th>Doctor</th>
-            <th>degree</th>
+            <th>Degree</th>
             <th>Specialization</th>
             <th>Phone</th>
             <th>Working Days</th>
@@ -20,56 +20,70 @@ export default function DoctorTable({ doctors }) {
             <tr key={doctor._id}>
               <td>
                 <div className="doctor-name">
-                  <div className="avatar">
+                  <div className="doctor-avatar">
                     {doctor.userId?.name?.charAt(0).toUpperCase()}
                   </div>
 
-                  <div>
+                  <div className="doctor-name-text">
                     <strong>{doctor.userId?.name}</strong>
                   </div>
                 </div>
               </td>
 
               <td>
-                <span>
-                  <strong>{doctor.degree}</strong>
-                </span>
+                <strong className="degree-text">{doctor.degree}</strong>
               </td>
 
               <td>
-                <span className="badge bg-primary-subtle text-primary">
+                <span className="specialization-badge">
                   {doctor.specialization}
                 </span>
               </td>
 
-              <td>{doctor.userId?.phone}</td>
-              <td>{doctor.workingDays?.join(", ")}</td>
+              <td className="phone-text">{doctor.userId?.phone}</td>
 
-              <td className="text-primary fw-bold">${doctor.fees}</td>
+              <td>
+                <div className="working-days-text">
+                  {doctor.workingDays?.join(", ")}
+                </div>
+              </td>
+
+              <td>
+                <span className="fees-text">${doctor.fees}</span>
+              </td>
 
               <td>
                 <span
-                  className={`badge ${
-                    doctor.isActive
-                      ? "bg-success-subtle text-success"
-                      : "bg-danger-subtle text-danger"
+                  className={`doctor-status ${
+                    doctor.isActive ? "active" : "inactive"
                   }`}
                 >
+                  <span className="status-dot"></span>
                   {doctor.isActive ? "Active" : "Inactive"}
                 </span>
               </td>
-              
-              <td>
-                <button className="btn btn-light btn-sm">
-                  <i className="bi bi-eye"></i>
-                </button>
 
-                <button className="btn btn-light btn-sm ms-2">
-                  <i className="bi bi-three-dots-vertical"></i>
-                </button>
+              <td>
+                <div className="doctor-actions">
+                  <button className="action-btn view-btn">
+                    <i className="bi bi-eye"></i>
+                  </button>
+
+                  <button className="action-btn more-btn">
+                    <i className="bi bi-three-dots-vertical"></i>
+                  </button>
+                </div>
               </td>
             </tr>
           ))}
+
+          {doctors.length === 0 && (
+            <tr>
+              <td colSpan="8" className="empty-doctors">
+                No doctors found
+              </td>
+            </tr>
+          )}
         </tbody>
       </table>
     </div>

@@ -11,9 +11,9 @@ import {
   deleteMedicalRecord,
 } from "@/services/api";
 
-
 function StatsCards({ records }) {
   const todayStr = new Date().toDateString();
+
   const todayRecords = records.filter(
     (r) => new Date(r.createdAt).toDateString() === todayStr,
   );
@@ -32,6 +32,7 @@ function StatsCards({ records }) {
         <div className="icon-box blue-card">
           <i className="bi bi-journal-medical"></i>
         </div>
+
         <div className="stat-info">
           <span>Total Records</span>
           <h3>{records.length}</h3>
@@ -43,6 +44,7 @@ function StatsCards({ records }) {
         <div className="icon-box green-card">
           <i className="bi bi-calendar-check-fill"></i>
         </div>
+
         <div className="stat-info">
           <span>Today's Records</span>
           <h3>{todayRecords.length}</h3>
@@ -54,6 +56,7 @@ function StatsCards({ records }) {
         <div className="icon-box purple-card">
           <i className="bi bi-people-fill"></i>
         </div>
+
         <div className="stat-info">
           <span>Patients Treated</span>
           <h3>{uniquePatients}</h3>
@@ -65,6 +68,7 @@ function StatsCards({ records }) {
         <div className="icon-box orange-card">
           <i className="bi bi-person-badge-fill"></i>
         </div>
+
         <div className="stat-info">
           <span>Doctors Involved</span>
           <h3>{uniqueDoctors}</h3>
@@ -74,7 +78,6 @@ function StatsCards({ records }) {
     </div>
   );
 }
-
 
 function RecordModal({
   patients,
@@ -99,39 +102,64 @@ function RecordModal({
     prescription: editingRecord?.prescription || [],
     xrays: editingRecord?.xrays || [],
   });
+
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
     if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }));
+      setErrors((prev) => ({
+        ...prev,
+        [name]: "",
+      }));
     }
   };
 
   const validate = () => {
     const newErrors = {};
-    if (!formData.patientId) newErrors.patientId = "Patient is required";
-    if (!formData.doctorId) newErrors.doctorId = "Doctor is required";
-    if (!formData.appointmentId)
+
+    if (!formData.patientId) {
+      newErrors.patientId = "Patient is required";
+    }
+
+    if (!formData.doctorId) {
+      newErrors.doctorId = "Doctor is required";
+    }
+
+    if (!formData.appointmentId) {
       newErrors.appointmentId = "Appointment is required";
-    if (!formData.chiefComplaint.trim())
+    }
+
+    if (!formData.chiefComplaint.trim()) {
       newErrors.chiefComplaint = "Chief complaint is required";
-    if (!formData.diagnosis.trim())
+    }
+
+    if (!formData.diagnosis.trim()) {
       newErrors.diagnosis = "Diagnosis is required";
+    }
+
     return newErrors;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const validationErrors = validate();
+
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
     }
 
     setIsSubmitting(true);
+
     try {
       if (editingRecord) {
         await updateMedicalRecordNotes(editingRecord._id, {
@@ -147,8 +175,10 @@ function RecordModal({
             ? new Date(formData.nextVisit).toISOString()
             : null,
         };
+
         await createMedicalRecord(data);
       }
+
       onSave();
     } catch (err) {
       alert(err.response?.data?.message || "Failed to save record");
@@ -157,21 +187,30 @@ function RecordModal({
     }
   };
 
-  
   const handleAddPrescription = () => {
     setFormData((prev) => ({
       ...prev,
       prescription: [
         ...prev.prescription,
-        { medicineName: "", dosage: "", duration: "", instructions: "" },
+        {
+          medicineName: "",
+          dosage: "",
+          duration: "",
+          instructions: "",
+        },
       ],
     }));
   };
 
   const handlePrescriptionChange = (index, field, value) => {
     const updated = [...formData.prescription];
+
     updated[index][field] = value;
-    setFormData((prev) => ({ ...prev, prescription: updated }));
+
+    setFormData((prev) => ({
+      ...prev,
+      prescription: updated,
+    }));
   };
 
   const handleRemovePrescription = (index) => {
@@ -181,21 +220,30 @@ function RecordModal({
     }));
   };
 
-  
   const handleAddXray = () => {
     setFormData((prev) => ({
       ...prev,
       xrays: [
         ...prev.xrays,
-        { xrayType: "", status: "Pending", price: 0, notes: "" },
+        {
+          xrayType: "",
+          status: "Pending",
+          price: 0,
+          notes: "",
+        },
       ],
     }));
   };
 
   const handleXrayChange = (index, field, value) => {
     const updated = [...formData.xrays];
+
     updated[index][field] = value;
-    setFormData((prev) => ({ ...prev, xrays: updated }));
+
+    setFormData((prev) => ({
+      ...prev,
+      xrays: updated,
+    }));
   };
 
   const handleRemoveXray = (index) => {
@@ -205,7 +253,6 @@ function RecordModal({
     }));
   };
 
-  
   const filteredAppointments = formData.patientId
     ? appointments.filter(
         (a) => (a.patientId?._id || a.patientId) === formData.patientId,
@@ -219,137 +266,187 @@ function RecordModal({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="modal-header">
-          <h2>
-            <i className="bi bi-journal-plus me-2"></i>
-            {editingRecord ? "Edit Medical Record" : "New Medical Record"}
-          </h2>
-          <button className="btn-close" onClick={onClose}></button>
+          <div className="modal-title">
+            <div className="modal-title-icon">
+              <i className="bi bi-journal-plus"></i>
+            </div>
+
+            <div>
+              <h2>
+                {editingRecord ? "Edit Medical Record" : "New Medical Record"}
+              </h2>
+
+              <p>
+                {editingRecord
+                  ? "Update medical record information"
+                  : "Create a new medical record"}
+              </p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            className="btn-close"
+            onClick={onClose}
+            aria-label="Close"
+          ></button>
         </div>
 
         <form onSubmit={handleSubmit}>
-          <div className="form-row">
+          <div className="form-section">
+            <div className="form-section-title">
+              <i className="bi bi-person-vcard"></i>
+              <span>Basic Information</span>
+            </div>
+
+            <div className="form-row">
+              <div className="field">
+                <label>Patient *</label>
+
+                <select
+                  name="patientId"
+                  value={formData.patientId}
+                  onChange={handleChange}
+                  disabled={!!editingRecord}
+                  className={errors.patientId ? "error" : ""}
+                >
+                  <option value="">Select Patient</option>
+
+                  {patients.map((p) => (
+                    <option key={p._id || p.id} value={p._id || p.id}>
+                      {p.fullName || p.name} - {p.phone}
+                    </option>
+                  ))}
+                </select>
+
+                {errors.patientId && (
+                  <span className="error-text">{errors.patientId}</span>
+                )}
+              </div>
+
+              <div className="field">
+                <label>Doctor *</label>
+
+                <select
+                  name="doctorId"
+                  value={formData.doctorId}
+                  onChange={handleChange}
+                  disabled={!!editingRecord}
+                  className={errors.doctorId ? "error" : ""}
+                >
+                  <option value="">Select Doctor</option>
+
+                  {doctors.map((d) => (
+                    <option key={d._id || d.id} value={d._id || d.id}>
+                      {d.userId?.name || d.userId?.fullname || "Doctor"}
+
+                      {d.specialization ? ` (${d.specialization})` : ""}
+                    </option>
+                  ))}
+                </select>
+
+                {errors.doctorId && (
+                  <span className="error-text">{errors.doctorId}</span>
+                )}
+              </div>
+            </div>
+
             <div className="field">
-              <label>Patient *</label>
+              <label>Appointment *</label>
+
               <select
-                name="patientId"
-                value={formData.patientId}
+                name="appointmentId"
+                value={formData.appointmentId}
                 onChange={handleChange}
                 disabled={!!editingRecord}
-                className={errors.patientId ? "error" : ""}
+                className={errors.appointmentId ? "error" : ""}
               >
-                <option value="">Select Patient</option>
-                {patients.map((p) => (
-                  <option key={p._id || p.id} value={p._id || p.id}>
-                    {p.fullName || p.name} - {p.phone}
+                <option value="">Select Appointment</option>
+
+                {filteredAppointments.map((a) => (
+                  <option key={a._id || a.id} value={a._id || a.id}>
+                    {new Date(a.dateAndTime).toLocaleString()} - {a.status}
                   </option>
                 ))}
               </select>
-              {errors.patientId && (
-                <span className="error-text">{errors.patientId}</span>
+
+              {errors.appointmentId && (
+                <span className="error-text">{errors.appointmentId}</span>
+              )}
+            </div>
+          </div>
+
+          <div className="form-section">
+            <div className="form-section-title">
+              <i className="bi bi-heart-pulse"></i>
+              <span>Medical Information</span>
+            </div>
+
+            <div className="field">
+              <label>Chief Complaint *</label>
+
+              <textarea
+                name="chiefComplaint"
+                rows="3"
+                value={formData.chiefComplaint}
+                onChange={handleChange}
+                disabled={!!editingRecord}
+                placeholder="Patient's main complaint..."
+                className={errors.chiefComplaint ? "error" : ""}
+              />
+
+              {errors.chiefComplaint && (
+                <span className="error-text">{errors.chiefComplaint}</span>
               )}
             </div>
 
             <div className="field">
-              <label>Doctor *</label>
-              <select
-                name="doctorId"
-                value={formData.doctorId}
+              <label>Diagnosis *</label>
+
+              <textarea
+                name="diagnosis"
+                rows="3"
+                value={formData.diagnosis}
                 onChange={handleChange}
                 disabled={!!editingRecord}
-                className={errors.doctorId ? "error" : ""}
-              >
-                <option value="">Select Doctor</option>
-                {doctors.map((d) => (
-                  <option key={d._id || d.id} value={d._id || d.id}>
-                    {d.userId?.name || d.userId?.fullname || "Doctor"}
-                    {d.specialization ? ` (${d.specialization})` : ""}
-                  </option>
-                ))}
-              </select>
-              {errors.doctorId && (
-                <span className="error-text">{errors.doctorId}</span>
+                placeholder="Medical diagnosis..."
+                className={errors.diagnosis ? "error" : ""}
+              />
+
+              {errors.diagnosis && (
+                <span className="error-text">{errors.diagnosis}</span>
               )}
             </div>
-          </div>
 
-          <div className="field">
-            <label>Appointment *</label>
-            <select
-              name="appointmentId"
-              value={formData.appointmentId}
-              onChange={handleChange}
-              disabled={!!editingRecord}
-              className={errors.appointmentId ? "error" : ""}
-            >
-              <option value="">Select Appointment</option>
-              {filteredAppointments.map((a) => (
-                <option key={a._id || a.id} value={a._id || a.id}>
-                  {new Date(a.dateAndTime).toLocaleString()} - {a.status}
-                </option>
-              ))}
-            </select>
-            {errors.appointmentId && (
-              <span className="error-text">{errors.appointmentId}</span>
-            )}
-          </div>
+            <div className="form-row">
+              <div className="field">
+                <label>Treatment Plan</label>
 
-          <div className="field">
-            <label>Chief Complaint *</label>
-            <textarea
-              name="chiefComplaint"
-              rows="2"
-              value={formData.chiefComplaint}
-              onChange={handleChange}
-              disabled={!!editingRecord}
-              placeholder="Patient's main complaint..."
-              className={errors.chiefComplaint ? "error" : ""}
-            />
-            {errors.chiefComplaint && (
-              <span className="error-text">{errors.chiefComplaint}</span>
-            )}
-          </div>
+                <textarea
+                  name="treatmentPlan"
+                  rows="3"
+                  value={formData.treatmentPlan}
+                  onChange={handleChange}
+                  placeholder="Planned treatment..."
+                />
+              </div>
 
-          <div className="field">
-            <label>Diagnosis *</label>
-            <textarea
-              name="diagnosis"
-              rows="2"
-              value={formData.diagnosis}
-              onChange={handleChange}
-              disabled={!!editingRecord}
-              placeholder="Medical diagnosis..."
-              className={errors.diagnosis ? "error" : ""}
-            />
-            {errors.diagnosis && (
-              <span className="error-text">{errors.diagnosis}</span>
-            )}
-          </div>
+              <div className="field">
+                <label>Notes</label>
 
-          <div className="field">
-            <label>Treatment Plan</label>
-            <textarea
-              name="treatmentPlan"
-              rows="2"
-              value={formData.treatmentPlan}
-              onChange={handleChange}
-              placeholder="Planned treatment..."
-            />
-          </div>
+                <textarea
+                  name="notes"
+                  rows="3"
+                  value={formData.notes}
+                  onChange={handleChange}
+                  placeholder="Additional notes..."
+                />
+              </div>
+            </div>
 
-          <div className="field">
-            <label>Notes</label>
-            <textarea
-              name="notes"
-              rows="2"
-              value={formData.notes}
-              onChange={handleChange}
-              placeholder="Additional notes..."
-            />
-          </div>
-
-          <div className="form-row">
             <div className="field">
               <label>Next Visit</label>
+
               <input
                 type="datetime-local"
                 name="nextVisit"
@@ -360,30 +457,42 @@ function RecordModal({
             </div>
           </div>
 
-          {}
           <div className="section-box">
             <div className="section-header">
-              <h4>
-                <i className="bi bi-capsule me-2"></i> Prescription
-              </h4>
+              <div className="section-heading">
+                <div className="section-icon prescription-icon">
+                  <i className="bi bi-capsule"></i>
+                </div>
+
+                <div>
+                  <h4>Prescription</h4>
+                  <span>Add prescribed medicines</span>
+                </div>
+              </div>
+
               <button
                 type="button"
                 className="btn-add-section"
                 onClick={handleAddPrescription}
                 disabled={!!editingRecord}
               >
-                + Add Medicine
+                <i className="bi bi-plus-lg"></i>
+                <span>Add Medicine</span>
               </button>
             </div>
 
             {formData.prescription.length === 0 && (
-              <p className="empty-section">No medicines added yet</p>
+              <div className="empty-section">
+                <i className="bi bi-capsule"></i>
+                <p>No medicines added yet</p>
+              </div>
             )}
 
             {formData.prescription.map((med, idx) => (
               <div key={idx} className="dynamic-row">
-                <div className="field" style={{ marginBottom: 0 }}>
+                <div className="field">
                   <label>Medicine Name</label>
+
                   <input
                     type="text"
                     value={med.medicineName}
@@ -395,11 +504,13 @@ function RecordModal({
                       )
                     }
                     disabled={!!editingRecord}
-                    placeholder="e.g., Panadol"
+                    placeholder="e.g. Panadol"
                   />
                 </div>
-                <div className="field" style={{ marginBottom: 0 }}>
+
+                <div className="field">
                   <label>Dosage</label>
+
                   <input
                     type="text"
                     value={med.dosage}
@@ -407,11 +518,13 @@ function RecordModal({
                       handlePrescriptionChange(idx, "dosage", e.target.value)
                     }
                     disabled={!!editingRecord}
-                    placeholder="e.g., 500mg"
+                    placeholder="e.g. 500mg"
                   />
                 </div>
-                <div className="field" style={{ marginBottom: 0 }}>
+
+                <div className="field">
                   <label>Duration</label>
+
                   <input
                     type="text"
                     value={med.duration}
@@ -419,11 +532,13 @@ function RecordModal({
                       handlePrescriptionChange(idx, "duration", e.target.value)
                     }
                     disabled={!!editingRecord}
-                    placeholder="e.g., 7 days"
+                    placeholder="e.g. 7 days"
                   />
                 </div>
-                <div className="field" style={{ marginBottom: 0 }}>
+
+                <div className="field">
                   <label>Instructions</label>
+
                   <input
                     type="text"
                     value={med.instructions}
@@ -435,13 +550,14 @@ function RecordModal({
                       )
                     }
                     disabled={!!editingRecord}
-                    placeholder="e.g., After meals"
+                    placeholder="e.g. After meals"
                   />
                 </div>
+
                 {!editingRecord && (
                   <button
                     type="button"
-                    className="btn-action delete"
+                    className="btn-action delete dynamic-delete"
                     onClick={() => handleRemovePrescription(idx)}
                     title="Remove medicine"
                   >
@@ -452,30 +568,42 @@ function RecordModal({
             ))}
           </div>
 
-          {}
           <div className="section-box">
             <div className="section-header">
-              <h4>
-                <i className="bi bi-image me-2"></i> X-Rays
-              </h4>
+              <div className="section-heading">
+                <div className="section-icon xray-icon">
+                  <i className="bi bi-image"></i>
+                </div>
+
+                <div>
+                  <h4>X-Rays</h4>
+                  <span>Add X-Ray requests</span>
+                </div>
+              </div>
+
               <button
                 type="button"
                 className="btn-add-section"
                 onClick={handleAddXray}
                 disabled={!!editingRecord}
               >
-                + Add X-Ray
+                <i className="bi bi-plus-lg"></i>
+                <span>Add X-Ray</span>
               </button>
             </div>
 
             {formData.xrays.length === 0 && (
-              <p className="empty-section">No X-rays added yet</p>
+              <div className="empty-section">
+                <i className="bi bi-image"></i>
+                <p>No X-rays added yet</p>
+              </div>
             )}
 
             {formData.xrays.map((xray, idx) => (
-              <div key={idx} className="dynamic-row">
-                <div className="field" style={{ marginBottom: 0 }}>
+              <div key={idx} className="dynamic-row xray-row">
+                <div className="field">
                   <label>X-Ray Type</label>
+
                   <input
                     type="text"
                     value={xray.xrayType}
@@ -483,11 +611,13 @@ function RecordModal({
                       handleXrayChange(idx, "xrayType", e.target.value)
                     }
                     disabled={!!editingRecord}
-                    placeholder="e.g., Chest X-Ray"
+                    placeholder="e.g. Dental X-Ray"
                   />
                 </div>
-                <div className="field" style={{ marginBottom: 0 }}>
+
+                <div className="field">
                   <label>Price</label>
+
                   <input
                     type="number"
                     value={xray.price}
@@ -498,8 +628,10 @@ function RecordModal({
                     placeholder="0"
                   />
                 </div>
-                <div className="field" style={{ marginBottom: 0 }}>
+
+                <div className="field">
                   <label>Status</label>
+
                   <select
                     value={xray.status}
                     onChange={(e) =>
@@ -512,8 +644,10 @@ function RecordModal({
                     <option value="Cancelled">Cancelled</option>
                   </select>
                 </div>
-                <div className="field" style={{ marginBottom: 0 }}>
+
+                <div className="field">
                   <label>Notes</label>
+
                   <input
                     type="text"
                     value={xray.notes}
@@ -524,10 +658,11 @@ function RecordModal({
                     placeholder="Optional notes..."
                   />
                 </div>
+
                 {!editingRecord && (
                   <button
                     type="button"
-                    className="btn-action delete"
+                    className="btn-action delete dynamic-delete"
                     onClick={() => handleRemoveXray(idx)}
                     title="Remove X-ray"
                   >
@@ -547,6 +682,7 @@ function RecordModal({
             >
               Cancel
             </button>
+
             <button type="submit" className="btn-save" disabled={isSubmitting}>
               {isSubmitting
                 ? "Saving..."
@@ -561,7 +697,6 @@ function RecordModal({
   );
 }
 
-
 function ViewRecordModal({ record, onClose }) {
   if (!record) return null;
 
@@ -572,20 +707,32 @@ function ViewRecordModal({ record, onClose }) {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="modal-header">
-          <h2>
-            <i className="bi bi-journal-medical me-2"></i>
-            Medical Record Details
-          </h2>
-          <button className="btn-close" onClick={onClose}></button>
+          <div className="modal-title">
+            <div className="modal-title-icon">
+              <i className="bi bi-journal-medical"></i>
+            </div>
+
+            <div>
+              <h2>Medical Record Details</h2>
+              <p>Complete medical record information</p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            className="btn-close"
+            onClick={onClose}
+            aria-label="Close"
+          ></button>
         </div>
 
         <div className="record-details">
-          {}
           <div className="details-section">
             <h3>
-              <i className="bi bi-people-fill me-2"></i>
+              <i className="bi bi-people-fill"></i>
               Patient & Doctor
             </h3>
+
             <div className="details-grid">
               <div className="detail-item">
                 <label>Patient</label>
@@ -595,10 +742,12 @@ function ViewRecordModal({ record, onClose }) {
                     "N/A"}
                 </span>
               </div>
+
               <div className="detail-item">
                 <label>Phone</label>
                 <span>{record.patientId?.phone || "-"}</span>
               </div>
+
               <div className="detail-item">
                 <label>Doctor</label>
                 <span>
@@ -607,6 +756,7 @@ function ViewRecordModal({ record, onClose }) {
                     "N/A"}
                 </span>
               </div>
+
               <div className="detail-item">
                 <label>Specialization</label>
                 <span>{record.doctorId?.specialization || "-"}</span>
@@ -614,26 +764,29 @@ function ViewRecordModal({ record, onClose }) {
             </div>
           </div>
 
-          {}
           <div className="details-section">
             <h3>
-              <i className="bi bi-heart-pulse-fill me-2"></i>
+              <i className="bi bi-heart-pulse-fill"></i>
               Medical Information
             </h3>
+
             <div className="detail-block">
               <label>Chief Complaint</label>
-              <p>{record.chiefComplaint}</p>
+              <p>{record.chiefComplaint || "-"}</p>
             </div>
+
             <div className="detail-block">
               <label>Diagnosis</label>
-              <p>{record.diagnosis}</p>
+              <p>{record.diagnosis || "-"}</p>
             </div>
+
             {record.treatmentPlan && (
               <div className="detail-block">
                 <label>Treatment Plan</label>
                 <p>{record.treatmentPlan}</p>
               </div>
             )}
+
             {record.notes && (
               <div className="detail-block">
                 <label>Notes</label>
@@ -642,23 +795,26 @@ function ViewRecordModal({ record, onClose }) {
             )}
           </div>
 
-          {}
           {record.prescription && record.prescription.length > 0 && (
             <div className="details-section">
               <h3>
-                <i className="bi bi-capsule me-2"></i>
+                <i className="bi bi-capsule"></i>
                 Prescription ({record.prescription.length} medicines)
               </h3>
+
               <ul className="prescription-list">
                 {record.prescription.map((item, idx) => (
                   <li key={idx}>
-                    <strong>{item.medicineName}</strong>
+                    <strong>{item.medicineName || "Medicine"}</strong>
+
                     <span className="prescription-detail">
-                      {item.dosage} • {item.duration}
+                      {item.dosage || "-"} • {item.duration || "-"}
                     </span>
+
                     {item.instructions && (
                       <small className="prescription-instructions">
-                        📝 {item.instructions}
+                        <i className="bi bi-info-circle"></i>{" "}
+                        {item.instructions}
                       </small>
                     )}
                   </li>
@@ -667,30 +823,39 @@ function ViewRecordModal({ record, onClose }) {
             </div>
           )}
 
-          {}
           {record.xrays && record.xrays.length > 0 && (
             <div className="details-section">
               <h3>
-                <i className="bi bi-image me-2"></i>
+                <i className="bi bi-image"></i>
                 X-Rays ({record.xrays.length})
               </h3>
+
               <ul className="xray-list">
                 {record.xrays.map((xray, idx) => (
                   <li key={idx}>
                     <div className="xray-header">
-                      <strong>{xray.xrayType}</strong>
+                      <strong>{xray.xrayType || "X-Ray"}</strong>
+
                       <span
                         className={`xray-status status-${xray.status?.toLowerCase()}`}
                       >
                         {xray.status}
                       </span>
                     </div>
+
                     <div className="xray-info">
-                      <span>💰 Price: {xray.price || 0}</span>
+                      <span>
+                        <i className="bi bi-cash-stack"></i>
+                        Price: {xray.price || 0}
+                      </span>
                     </div>
+
                     {xray.notes && (
-                      <small className="xray-notes">📝 {xray.notes}</small>
+                      <small className="xray-notes">
+                        <i className="bi bi-sticky"></i> {xray.notes}
+                      </small>
                     )}
+
                     {xray.image && (
                       <a
                         href={xray.image}
@@ -698,7 +863,8 @@ function ViewRecordModal({ record, onClose }) {
                         rel="noopener noreferrer"
                         className="xray-image-link"
                       >
-                        📷 View Image
+                        <i className="bi bi-image"></i>
+                        View Image
                       </a>
                     )}
                   </li>
@@ -707,17 +873,22 @@ function ViewRecordModal({ record, onClose }) {
             </div>
           )}
 
-          {}
           <div className="details-section">
             <h3>
-              <i className="bi bi-calendar-fill me-2"></i>
+              <i className="bi bi-calendar-fill"></i>
               Dates
             </h3>
+
             <div className="details-grid">
               <div className="detail-item">
                 <label>Created At</label>
-                <span>{new Date(record.createdAt).toLocaleString()}</span>
+                <span>
+                  {record.createdAt
+                    ? new Date(record.createdAt).toLocaleString()
+                    : "-"}
+                </span>
               </div>
+
               {record.nextVisit && (
                 <div className="detail-item">
                   <label>Next Visit</label>
@@ -738,33 +909,28 @@ function ViewRecordModal({ record, onClose }) {
   );
 }
 
-
 export default function MedicalRecords() {
-  
   const [records, setRecords] = useState([]);
   const [patients, setPatients] = useState([]);
   const [doctors, setDoctors] = useState([]);
   const [appointments, setAppointments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  
   const [search, setSearch] = useState("");
   const [doctorFilter, setDoctorFilter] = useState("");
   const [dateFilter, setDateFilter] = useState("");
 
-  
   const [showModal, setShowModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [editingRecord, setEditingRecord] = useState(null);
   const [viewingRecord, setViewingRecord] = useState(null);
 
-  
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPerPage = 10;
 
-  
   const fetchAllData = useCallback(async () => {
     setIsLoading(true);
+
     try {
       const [recordsRes, patientsRes, doctorsRes, appointmentsRes] =
         await Promise.allSettled([
@@ -777,12 +943,15 @@ export default function MedicalRecords() {
       if (recordsRes.status === "fulfilled") {
         setRecords(recordsRes.value.data?.data || []);
       }
+
       if (patientsRes.status === "fulfilled") {
         setPatients(patientsRes.value.data?.data || []);
       }
+
       if (doctorsRes.status === "fulfilled") {
         setDoctors(doctorsRes.value.data?.data || []);
       }
+
       if (appointmentsRes.status === "fulfilled") {
         setAppointments(appointmentsRes.value.data?.data || []);
       }
@@ -797,7 +966,6 @@ export default function MedicalRecords() {
     fetchAllData();
   }, [fetchAllData]);
 
-  
   const handleAddNew = () => {
     setEditingRecord(null);
     setShowModal(true);
@@ -814,10 +982,13 @@ export default function MedicalRecords() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this record?")) return;
+    if (!window.confirm("Are you sure you want to delete this record?")) {
+      return;
+    }
 
     try {
       await deleteMedicalRecord(id);
+
       setRecords((prev) => prev.filter((r) => r._id !== id));
     } catch (err) {
       alert(err.response?.data?.message || "Failed to delete record");
@@ -830,24 +1001,27 @@ export default function MedicalRecords() {
     await fetchAllData();
   };
 
-  
   const filteredRecords = records.filter((record) => {
     const patientName = (
       record.patientId?.fullName ||
       record.patientId?.name ||
       ""
     ).toLowerCase();
+
     const doctorName = (
       record.doctorId?.userId?.fullname ||
       record.doctorId?.userId?.name ||
       ""
     ).toLowerCase();
+
     const diagnosis = (record.diagnosis || "").toLowerCase();
 
+    const searchValue = search.toLowerCase();
+
     const matchesSearch =
-      patientName.includes(search.toLowerCase()) ||
-      doctorName.includes(search.toLowerCase()) ||
-      diagnosis.includes(search.toLowerCase());
+      patientName.includes(searchValue) ||
+      doctorName.includes(searchValue) ||
+      diagnosis.includes(searchValue);
 
     const matchesDoctor =
       doctorFilter === "" ||
@@ -860,27 +1034,27 @@ export default function MedicalRecords() {
     return matchesSearch && matchesDoctor && matchesDate;
   });
 
-  
   const totalPages = Math.ceil(filteredRecords.length / recordsPerPage) || 1;
+
   const displayedRecords = filteredRecords.slice(
     (currentPage - 1) * recordsPerPage,
     currentPage * recordsPerPage,
   );
 
-  
   if (isLoading) {
     return (
       <div className="medical-records-page">
         <PageHeader />
+
         <div className="loading-container">
           <div className="spinner-border text-primary" role="status"></div>
+
           <p>Loading medical records...</p>
         </div>
       </div>
     );
   }
 
-  
   return (
     <div className="medical-records-page">
       <PageHeader />
@@ -891,6 +1065,7 @@ export default function MedicalRecords() {
         <div className="filter-group">
           <div className="search-wrapper">
             <i className="bi bi-search search-icon"></i>
+
             <input
               type="text"
               className="input-field search-input"
@@ -912,6 +1087,7 @@ export default function MedicalRecords() {
             }}
           >
             <option value="">All Doctors</option>
+
             {doctors.map((d) => (
               <option key={d._id || d.id} value={d._id || d.id}>
                 {d.userId?.name || d.userId?.fullname || "Doctor"}
@@ -921,7 +1097,7 @@ export default function MedicalRecords() {
 
           <input
             type="date"
-            className="input-field"
+            className="input-field date-filter"
             value={dateFilter}
             onChange={(e) => {
               setDateFilter(e.target.value);
@@ -939,13 +1115,15 @@ export default function MedicalRecords() {
                 setCurrentPage(1);
               }}
             >
+              <i className="bi bi-arrow-counterclockwise"></i>
               Reset
             </button>
           )}
         </div>
 
         <button className="btn-add-new" onClick={handleAddNew}>
-          + New Record
+          <i className="bi bi-plus-lg"></i>
+          New Record
         </button>
       </div>
 
@@ -963,6 +1141,7 @@ export default function MedicalRecords() {
                 <th>Actions</th>
               </tr>
             </thead>
+
             <tbody>
               {displayedRecords.length > 0 ? (
                 displayedRecords.map((record, index) => (
@@ -978,12 +1157,14 @@ export default function MedicalRecords() {
                         <div className="patient-avatar">
                           <i className="bi bi-person-fill"></i>
                         </div>
-                        <div>
+
+                        <div className="person-info">
                           <strong>
                             {record.patientId?.fullName ||
                               record.patientId?.name ||
                               "Deleted Patient"}
                           </strong>
+
                           <small>{record.patientId?.phone || "-"}</small>
                         </div>
                       </div>
@@ -991,12 +1172,17 @@ export default function MedicalRecords() {
 
                     <td>
                       <div className="doctor-cell">
-                        <strong>
-                          {record.doctorId?.userId?.fullname ||
-                            record.doctorId?.userId?.name ||
-                            "Deleted Doctor"}
-                        </strong>
-                        <small>{record.doctorId?.specialization || "-"}</small>
+                        <div className="person-info">
+                          <strong>
+                            {record.doctorId?.userId?.fullname ||
+                              record.doctorId?.userId?.name ||
+                              "Deleted Doctor"}
+                          </strong>
+
+                          <small>
+                            {record.doctorId?.specialization || "-"}
+                          </small>
+                        </div>
                       </div>
                     </td>
 
@@ -1004,7 +1190,7 @@ export default function MedicalRecords() {
                       <span className="diagnosis-text">
                         {record.diagnosis?.length > 40
                           ? record.diagnosis.substring(0, 40) + "..."
-                          : record.diagnosis}
+                          : record.diagnosis || "-"}
                       </span>
                     </td>
 
@@ -1013,6 +1199,7 @@ export default function MedicalRecords() {
                         <strong>
                           {new Date(record.createdAt).toLocaleDateString()}
                         </strong>
+
                         <small>
                           {new Date(record.createdAt).toLocaleTimeString([], {
                             hour: "2-digit",
@@ -1025,6 +1212,7 @@ export default function MedicalRecords() {
                     <td>
                       {record.nextVisit ? (
                         <span className="next-visit-badge">
+                          <i className="bi bi-calendar-event"></i>
                           {new Date(record.nextVisit).toLocaleDateString()}
                         </span>
                       ) : (
@@ -1041,6 +1229,7 @@ export default function MedicalRecords() {
                         >
                           <i className="bi bi-eye-fill"></i>
                         </button>
+
                         <button
                           className="btn-action edit"
                           title="Edit Notes"
@@ -1048,6 +1237,7 @@ export default function MedicalRecords() {
                         >
                           <i className="bi bi-pencil-fill"></i>
                         </button>
+
                         <button
                           className="btn-action delete"
                           title="Delete"
@@ -1062,13 +1252,17 @@ export default function MedicalRecords() {
               ) : (
                 <tr>
                   <td colSpan="7" className="empty-state">
-                    <i
-                      className="bi bi-journal-x"
-                      style={{ fontSize: "3rem", color: "#ccc" }}
-                    ></i>
-                    <p>No medical records found</p>
+                    <div className="empty-state-icon">
+                      <i className="bi bi-journal-x"></i>
+                    </div>
+
+                    <h4>No medical records found</h4>
+
+                    <p>There are no records matching your current filters.</p>
+
                     <button className="btn-add-new" onClick={handleAddNew}>
-                      + Create First Record
+                      <i className="bi bi-plus-lg"></i>
+                      Create First Record
                     </button>
                   </td>
                 </tr>
@@ -1083,13 +1277,16 @@ export default function MedicalRecords() {
               Showing {displayedRecords.length} of {filteredRecords.length}{" "}
               records
             </span>
+
             <div className="pagination-btns">
               <button
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage((prev) => prev - 1)}
               >
+                <i className="bi bi-chevron-left"></i>
                 Previous
               </button>
+
               {Array.from({ length: totalPages }, (_, index) => (
                 <button
                   key={index + 1}
@@ -1099,11 +1296,13 @@ export default function MedicalRecords() {
                   {index + 1}
                 </button>
               ))}
+
               <button
                 disabled={currentPage === totalPages}
                 onClick={() => setCurrentPage((prev) => prev + 1)}
               >
                 Next
+                <i className="bi bi-chevron-right"></i>
               </button>
             </div>
           </div>
