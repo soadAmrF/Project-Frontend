@@ -92,26 +92,21 @@ export const updateInventoryTransaction = (id, body) =>
 export const deleteInventoryTransaction = (id) =>
   api.delete(`/inventory-transactions/${id}`);
 
-// ////////////////// Lab Tests //////////////////
-export const getAllLabTests = (params) =>
-  api.get(`/lab-tests${buildQueryString(params)}`);
+// ==================== Lab Tests ====================
+export const getAllLabTests = (params) => api.get("/lab-tests", { params });
 export const getLabTestById = (id) => api.get(`/lab-tests/${id}`);
-export const createLabTest = (body) => api.post("/lab-tests", body);
-export const updateLabTest = (id, body) => api.patch(`/lab-tests/${id}`, body);
+export const createLabTest = (data) => api.post("/lab-tests", data);
+export const updateLabTest = (id, data) => api.patch(`/lab-tests/${id}`, data);
 export const deleteLabTest = (id) => api.delete(`/lab-tests/${id}`);
 
-// ////////////////// Lab Orders //////////////////
-export const getAllLabOrders = (params) =>
-  api.get(`/lab-orders${buildQueryString(params)}`);
+// ==================== Lab Orders ====================
+// ==================== Lab Orders ====================
+export const getAllLabOrders = (params) => api.get("/lab-orders", { params });
 export const getLabOrderById = (id) => api.get(`/lab-orders/${id}`);
-export const createLabOrder = (body) => api.post("/lab-orders", body);
-export const updateLabOrderStatus = (id, body) =>
-  api.patch(`/lab-orders/${id}/status`, body);
-export const addTestResult = (id, body) =>
-  api.patch(`/lab-orders/${id}/result`, body);
-export const cancelLabOrder = (id, body) =>
-  api.patch(`/lab-orders/${id}/cancel`, body);
-export const deleteLabOrder = (id) => api.delete(`/lab-orders/${id}`);
+export const createLabOrder = (data) => api.post("/lab-orders", data);
+export const updateLabOrderStatus = (id, data) => api.patch(`/lab-orders/${id}/status`, data);
+export const addTestResult = (id, data) => api.patch(`/lab-orders/${id}/result`, data);  // ← patch
+export const cancelLabOrder = (id, data) => api.patch(`/lab-orders/${id}/cancel`, data); // ← patch
 
 // ////////////////// Clinic Info //////////////////
 export const getClinicInfo = () => api.get("/clinic-info");
@@ -135,20 +130,7 @@ export const getCurrentUser = () => api.get("/auth/me");
 // ////////////////// Aliases (للتوافق مع الملفات القديمة) //////////////////
 export { getAllLabOrders as getLabOrders };
 
-// ////////////////// X-Rays //////////////////
-export const getAllXrays = () => api.get("/xray");
 
-export const getXrayById = (medicalRecordId, xrayId) =>
-  api.get(`/xray/${medicalRecordId}/${xrayId}`);
-
-export const createXray = (medicalRecordId, data) =>
-  api.post(`/xray/${medicalRecordId}`, data);
-
-export const updateXray = (medicalRecordId, xrayId, data) =>
-  api.put(`/xray/${medicalRecordId}/${xrayId}`, data);
-
-export const deleteXray = (medicalRecordId, xrayId) =>
-  api.delete(`/xray/${medicalRecordId}/${xrayId}`);
 
 // ////////////////// Invoices //////////////////
 
